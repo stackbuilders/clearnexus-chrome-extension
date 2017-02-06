@@ -25,6 +25,10 @@ executable client-gen-exe
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , client-gen
+                     , aeson
+                     , purescript-bridge
+                     , servant
+                     , servant-purescript
   default-language:    Haskell2010
 
 test-suite client-gen-test
