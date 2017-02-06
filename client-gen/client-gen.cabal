@@ -26,9 +26,11 @@ executable client-gen-exe
   build-depends:       base
                      , client-gen
                      , aeson
+                     , ip
                      , purescript-bridge
                      , servant
                      , servant-purescript
+                     , servant-server
                      , text
                      , time
   default-language:    Haskell2010

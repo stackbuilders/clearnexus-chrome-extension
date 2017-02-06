@@ -7,8 +7,11 @@
 module Main where
 
 import Lib
+import Data.Aeson
 import Data.Text ( Text )
+import Data.Time ( UTCTime )
 import Net.Types ( IPv4 )
+import Servant
 
 type PostLinksR =
   QueryParam "access_token" Token :>
@@ -23,10 +26,7 @@ newtype Token = Token {unToken :: Text}
            , ToJSON
            , FromJSON )
 
-instance IsString Token where
-  fromString = Token . fromString
-
-newtype CreateLinkData =
+data CreateLinkData =
   CreateLinkData {cldTargetEmail :: !Text}
 
 instance FromJSON CreateLinkData where
@@ -57,7 +57,7 @@ data ClickEventData
   = ClickEventData { cedSubscribed :: !Bool
                    , cedTime :: !UTCTime
                    , cedIp :: !( Maybe IPv4 )
-                   , cedUserAgent :: !Maybe Text }
+                   , cedUserAgent :: !( Maybe Text ) }
 
 instance ToJSON ClickEventData where
   toJSON ClickEventData {..} = object
