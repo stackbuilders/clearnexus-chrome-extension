@@ -1,5 +1,7 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Main where
@@ -16,9 +18,20 @@ type PostLinksR =
   Post '[JSON] LinkData
 
 newtype Token = Token {unToken :: Text}
+  deriving ( Eq
+           , Show
+           , ToJSON
+           , FromJSON )
+
+instance IsString Token where
+  fromString = Token . fromString
 
 newtype CreateLinkData =
   CreateLinkData {cldTargetEmail :: !Text}
+
+instance FromJSON CreateLinkData where
+  parseJSON = withObject "CreateLinkData" $ \o ->
+    CreateLinkData <$> ( o .: "target_email" )
 
 data LinkData
   = LinkData { ldEmail :: !Text
@@ -29,11 +42,29 @@ data LinkData
              , ldCreatedAt :: !UTCTime
              , ldClickEvents :: ![ClickEventData] }
 
+instance ToJSON LinkData where
+  toJSON LinkData {..} = object
+    [ "email"        .= ldEmail
+    , "organization" .= ldOrganization
+    , "token"        .= ldToken
+    , "unsubscription_link" .= ldUnsubsciptionLink
+    , "subscription_link"   .= ldSubscriptionLink
+    , "created_at"   .= ldCreatedAt
+    , "click_events" .= ldClickEvents ]
+
+
 data ClickEventData
   = ClickEventData { cedSubscribed :: !Bool
                    , cedTime :: !UTCTime
-                   , cedIp :: !(Maybe IPv4)
-                   , cedUserAgent :: !Maybe Text}
+                   , cedIp :: !( Maybe IPv4 )
+                   , cedUserAgent :: !Maybe Text }
+
+instance ToJSON ClickEventData where
+  toJSON ClickEventData {..} = object
+    [ "subscribed" .= cedSubscribed
+    , "time"       .= cedTime
+    , "ip"         .= cedIp
+    , "user_agent" .= cedUserAgent ]
 
 main :: IO ()
 main = someFunc
