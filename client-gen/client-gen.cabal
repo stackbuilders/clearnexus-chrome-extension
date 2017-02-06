@@ -29,6 +29,8 @@ executable client-gen-exe
                      , purescript-bridge
                      , servant
                      , servant-purescript
+                     , text
+                     , time
   default-language:    Haskell2010
 
 test-suite client-gen-test
