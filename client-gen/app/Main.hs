@@ -20,6 +20,21 @@ type PostLinksR =
   ReqBody '[JSON] CreateLinkData :>
   Post '[JSON] LinkData
 
+data MyBridge
+
+myBridgeProxy :: Proxy MyBridge
+myBridgeProxy = Proxy
+
+instance HasBridge MyBridge where
+  languageBridge _ = buildBridge defaultBridge
+
+myTypes :: [HaskellType]
+myTypes = [ mkTypeInfo ( Proxy :: Proxy Token )
+          , mkTypeInfo ( Proxy :: Proxy CreateLinkData )
+          , mkTypeInfo ( Proxy :: Proxy LinkData )
+          , mkTypeInfo ( Proxy :: Proxy ClickEventData )
+          ]
+
 newtype Token = Token {unToken :: Text}
   deriving ( Eq
            , Show
