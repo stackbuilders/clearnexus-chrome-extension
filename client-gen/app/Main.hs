@@ -10,8 +10,10 @@ import Lib
 import Data.Aeson
 import Data.Text ( Text )
 import Data.Time ( UTCTime )
+import Language.PureScript.Bridge
 import Net.Types ( IPv4 )
 import Servant
+import Servant.PureScript
 
 type PostLinksR =
   QueryParam "access_token" Token :>
