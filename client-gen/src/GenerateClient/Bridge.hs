@@ -3,6 +3,7 @@ module GenerateClient.Bridge where
 import Data.Proxy
 import GenerateClient.Types
 import GenerateClient.API
+import Language.PureScript.Bridge.TypeInfo
 
 data MyBridge
 
