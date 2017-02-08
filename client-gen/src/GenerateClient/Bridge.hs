@@ -3,11 +3,15 @@ module GenerateClient.Bridge where
 import Data.Proxy
 import GenerateClient.Types
 import GenerateClient.API
-import Servant.PureScript ( defaultBridge )
+import Servant.PureScript ( defaultBridge
+                          , HasBridge(..) )
 import Language.PureScript.Bridge ( buildBridge
                                   , mkSumType )
 
 data MyBridge
+
+instance HasBridge MyBridge where
+  languageBridge _ = buildBridge defaultBridge
 
 myBridge = buildBridge defaultBridge
 
