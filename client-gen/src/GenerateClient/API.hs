@@ -5,6 +5,7 @@ module GenerateClient.API
   ( GetEmailPropertiesR )
 where
 
+import GenerateClient.Types
 import Servant
 
 type GetEmailPropertiesR =
