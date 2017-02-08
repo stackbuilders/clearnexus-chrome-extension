@@ -1,5 +1,6 @@
 module GenerateClient.Bridge where
 
+import Data.Proxy
 import GenerateClient.Types
 import GenerateClient.API
 
