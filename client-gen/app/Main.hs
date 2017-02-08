@@ -1,6 +1,8 @@
 module Main where
 
 import GenerateClient.Bridge
+import Servant.PureScript ( writeAPIModule
+                          , defaultBridge )
 import System.Environment ( lookupEnv )
 
 main :: IO ()
