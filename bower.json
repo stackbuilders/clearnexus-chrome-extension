@@ -1,0 +1,9 @@
+{
+  "name": "clearnexus-chrome-extension",
+  "version": "0.0.1",
+  "moduleType": [ "node" ],
+  "ignore": [ "**/.*", "node_modules", "bower_components", "output" ],
+  "dependencies": {
+    "purescript-prim": "^0.10.6"
+  }
+}
