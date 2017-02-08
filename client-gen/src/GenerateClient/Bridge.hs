@@ -3,9 +3,13 @@ module GenerateClient.Bridge where
 import Data.Proxy
 import GenerateClient.Types
 import GenerateClient.API
+import Servant.PureScript ( defaultBridge )
+import Language.PureScript.Bridge ( buildBridge )
 import Language.PureScript.Bridge.TypeInfo
 
 data MyBridge
+
+myBridge = buildBridge defaultBridge
 
 myBridgeProxy :: Proxy MyBridge
 myBridgeProxy = Proxy
