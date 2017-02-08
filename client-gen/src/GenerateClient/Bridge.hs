@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module GenerateClient.Bridge
   ( myApiProxy
   , myBridge
@@ -5,20 +7,42 @@ module GenerateClient.Bridge
   , myTypes
   ) where
 
+import Control.Lens.Getter ( view )
 import Data.Proxy ( Proxy(..) )
 import GenerateClient.Types
 import GenerateClient.API
 import Servant.PureScript ( defaultBridge
-                          , HasBridge(..) )
+                          , HasBridge(..) 
+                          )
 import Language.PureScript.Bridge ( buildBridge
-                                  , mkSumType )
+                                  , BridgePart
+                                  , FullBridge
+                                  , mkSumType
+                                  , TypeInfo(..)
+                                  , (^==)
+                                  , (<|>)
+                                  , psTypeParameters
+                                  , typeModule
+                                  , haskType 
+                                  )
+
+fixTypesModule :: BridgePart
+fixTypesModule = do
+  typeModule ^== "ClearNexus.Client"
+  t <- view haskType
+  TypeInfo ( _typePackage t ) "ClearNexus.Client.Types" ( _typeName t )
+    <$> psTypeParameters
 
 data MyBridge
 
 instance HasBridge MyBridge where
-  languageBridge _ = buildBridge defaultBridge
+  languageBridge _ = buildBridge myBridgePart
 
-myBridge = buildBridge defaultBridge
+myBridge :: FullBridge
+myBridge = buildBridge myBridgePart
+
+myBridgePart :: BridgePart
+myBridgePart = defaultBridge <|> fixTypesModule
 
 myBridgeProxy :: Proxy MyBridge
 myBridgeProxy = Proxy
