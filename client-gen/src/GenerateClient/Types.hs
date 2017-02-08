@@ -4,6 +4,8 @@ module GenerateClient.Types
   , UriEmail
   ) where
 
+import Data.Text ( Text )
+
 data EmailProperties = EmailProperties
   { subscribed :: !Bool }
 
