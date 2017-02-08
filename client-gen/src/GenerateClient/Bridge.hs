@@ -1,6 +1,11 @@
-module GenerateClient.Bridge where
+module GenerateClient.Bridge
+  ( myApiProxy
+  , myBridge
+  , myBridgeProxy
+  , myTypes
+  ) where
 
-import Data.Proxy
+import Data.Proxy ( Proxy(..) )
 import GenerateClient.Types
 import GenerateClient.API
 import Servant.PureScript ( defaultBridge
