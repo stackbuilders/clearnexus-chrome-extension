@@ -35,10 +35,11 @@ getApiEmailByEmail email access_token = do
         <> "?" <> encodeQueryItem spOpts_' "access_token" access_token
   let reqHeaders =
         []
-  affResp <- liftAff $ affjax defaultRequest
-                                { method = httpMethod
-                                , url = reqUrl
-                                , headers = defaultRequest.headers <> reqHeaders
-                                }
-  getResult decodeJson affResp
+  let affReq = defaultRequest
+                 { method = httpMethod
+                 , url = reqUrl
+                 , headers = defaultRequest.headers <> reqHeaders
+                 }
+  affResp <- liftAff $ affjax affReq
+  getResult affReq decodeJson affResp
   
