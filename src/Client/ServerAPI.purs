@@ -32,7 +32,7 @@ getApiEmailByEmail email access_token = do
   let httpMethod = "GET"
   let reqUrl = baseURL <> "api" <> "/" <> "email"
         <> "/" <> encodeURLPiece spOpts_' email 
-        <> "?" <> encodeQuery "access_token" access_token
+        <> "?" <> encodeQueryItem spOpts_' "access_token" access_token
   let reqHeaders =
         []
   affResp <- liftAff $ affjax defaultRequest
