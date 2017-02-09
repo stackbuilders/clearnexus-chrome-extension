@@ -13,7 +13,8 @@
     "purescript-argonaut-generic-codecs": "^4.0.0",
     "purescript-nullable": "^2.0.0",
     "purescript-globals": "^2.0.0",
-    "purescript-affjax": "^3.0.2"
+    "purescript-affjax": "^3.0.2",
+    "purescript-servant-support": "^6.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^2.0.0"
