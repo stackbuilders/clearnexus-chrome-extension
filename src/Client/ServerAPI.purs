@@ -16,7 +16,7 @@ import Network.HTTP.Affjax (AJAX)
 import Prim (String)
 import Servant.PureScript.Affjax (AjaxError(..), affjax, defaultRequest)
 import Servant.PureScript.Settings (SPSettings_(..), gDefaultToURLPiece)
-import Servant.PureScript.Util (encodeListQuery, encodeQueryItem, encodeURLPiece, getResult)
+import Servant.PureScript.Util (encodeHeader, encodeListQuery, encodeQueryItem, encodeURLPiece, getResult)
 
 newtype SPParams_ = SPParams_ { baseURL :: String
                               }
@@ -40,6 +40,6 @@ getApiEmailByEmail email access_token = do
                  , url = reqUrl
                  , headers = defaultRequest.headers <> reqHeaders
                  }
-  affResp <- liftAff $ affjax affReq
+  affResp <- affjax affReq
   getResult affReq decodeJson affResp
   
