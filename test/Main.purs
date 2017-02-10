@@ -3,6 +3,7 @@ module Test.Main where
 import Control.Monad.Eff ( Eff )
 import Control.Monad.Error.Class ( catchError )
 import Control.Monad.Reader.Class ( local )
+import Data.Either ( Either(..) )
 import Function ( ($)
                 , const
                 )
@@ -14,6 +15,9 @@ import Prelude ( bind
                , pure
                , Unit
                )
+import Servant.PureScript.Affjax ( AjaxError(..)
+                                 , errorToString
+                                 )
 import Servant.PureScript.Settings ( SPSettings_(..)
                                    , defaultSettings
                                    )
@@ -51,10 +55,11 @@ main = run [ consoleReporter ] do
   describe "Generated Client" do
     describe "getApiEmailByEmail" do
       it "returns false for an email that is not subscribed" do
-        isSubscribed <- catchError
-          ( local
+        ( isSubscribed :: Either AjaxError EmailProperties ) <- local
             ( makeSettings clearNexusStaging )
-            $ getApiEmailByEmail unsubscribedEmail testUserToken )
-          $ \e -> pure ( EmailProperties { subscribed : true } )
-        isSubscribed `shouldEqual`
-                    EmailProperties { subscribed: false }
+            $ getApiEmailByEmail unsubscribedEmail testUserToken
+        case isSubscribed of
+          Left err -> fail $ errorToString err
+          Right status ->
+            status `shouldEqual`
+              EmailProperties { subscribed: false }
