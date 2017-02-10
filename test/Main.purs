@@ -1,8 +1,12 @@
 module Test.Main where
 
+import Control.Monad.Aff.Class (class MonadAff, liftAff)
 import Control.Monad.Eff ( Eff )
-import Control.Monad.Error.Class ( catchError )
-import Control.Monad.Reader.Class ( local )
+import Control.Monad.Error.Class ( catchError
+                                 , class MonadError )
+import Control.Monad.Reader.Class ( local
+                                  , class MonadReader
+                                  )
 import Data.Either ( Either(..) )
 import Function ( ($)
                 , const
@@ -11,7 +15,9 @@ import GenerateClient.Types ( EmailProperties(..)
                             , UriEmail(..)
                             , Token(..)
                             )
+import Network.HTTP.Affjax (AJAX)
 import Prelude ( bind
+               , (<$>)
                , pure
                , Unit
                )
@@ -50,14 +56,24 @@ unsubscribedEmail =
 testUserToken :: Token
 testUserToken = Token { unToken : "testToken" }
 
+newtype ReadEither a = ReadEither ( Either AjaxError a )
+
+subscriptionStatus :: forall eff m.
+                      (MonadReader (SPSettings_ SPParams_) m, MonadError AjaxError m, MonadAff ( ajax :: AJAX | eff) m) => UriEmail
+                   -> m ( Either AjaxError EmailProperties )
+subscriptionStatus email = catchError
+  ( Right <$>
+    ( local
+      ( makeSettings clearNexusStaging )
+      $ getApiEmailByEmail email testUserToken ) )
+  ( \err -> pure $ Left err )
+
 main :: Eff ( RunnerEffects () ) Unit
 main = run [ consoleReporter ] do
   describe "Generated Client" do
     describe "getApiEmailByEmail" do
       it "returns false for an email that is not subscribed" do
-        ( isSubscribed :: Either AjaxError EmailProperties ) <- local
-            ( makeSettings clearNexusStaging )
-            $ getApiEmailByEmail unsubscribedEmail testUserToken
+        isSubscribed <- subscriptionStatus unsubscribedEmail
         case isSubscribed of
           Left err -> fail $ errorToString err
           Right status ->
