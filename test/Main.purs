@@ -1,16 +1,31 @@
 module Test.Main where
 
-import Prelude
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Reader.Class ( local )
+import Function ( ($)
+                , const
+                )
+import GenerateClient.Types ( UriEmail(..)
+                            , Token(..)
+                            )
+import Prelude ( bind )
+import Servant.PureScript.Settings ( SPSettings_(..) )
+import ServerAPI ( SPParams_(..)
+                 , getApiEmailByEmail
+                 )
+import Test.Spec ( describe
+                 , it
+                 )
+import Test.Spec.Assertions ( shouldEqual )
+import Test.Spec.Reporter.Console ( consoleReporter )
+import Test.Spec.Runner ( run )
 
-makeSettings :: String
+makeSettings :: { baseURL :: String }
              -> SPSettings_ SPParams_
              -> SPSettings_ SPParams_
 makeSettings uri = const $ SPSettings_ $ SPParams_ uri
 
-clearNexusStaging :: String
-clearNexusStaging = "https://staging.clearnex.us"
+clearNexusStaging :: { baseURL :: String }
+clearNexusStaging = { baseURL : "https://staging.clearnex.us" }
 
 main = run [ consoleReporter ] do
   describe "Generated Client" do
@@ -20,4 +35,4 @@ main = run [ consoleReporter ] do
         let userToken = Token "testToken"
         isSubscribed <- local ( makeSettings clearNexusStaging ) $
           getApiEmailByEmail emailAddr userToken
-        isSubscribed.subscribed `shouldBe` false
+        isSubscribed.subscribed `shouldEqual` false
