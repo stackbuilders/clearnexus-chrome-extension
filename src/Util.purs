@@ -16,7 +16,7 @@ import GenerateClient.Types ( EmailProperties(..)
 import Network.HTTP.Affjax ( AJAX )
 import Servant.PureScript.Affjax ( AjaxError )
 import Servant.PureScript.Settings ( SPSettings_ )
-import ServerAPI ( SPParams_(..)
+import ServerAPI ( SPParams_
                  , getApiEmailByEmail
                  )
 
