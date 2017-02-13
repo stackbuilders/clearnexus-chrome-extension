@@ -1,3 +1,6 @@
+machine:
+  node:
+    version: 6.9.5
 dependencies:
   cache_directories:
     - bower_components
@@ -5,13 +8,6 @@ dependencies:
     - output
 
   pre:
-    - sudo apt-get update
-    - sudo apt-get install -y build-essential libssl-dev
-    - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.0/install.sh | bash
-    - source ~/.profile
-    - nvm install 6.9.5
-    - nvm use 6.9.5
-    - nvm list
     - npm install bower
     - npm install purescript
     - npm install pulp
