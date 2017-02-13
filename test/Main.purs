@@ -4,6 +4,8 @@ import Control.Monad.Aff.Class (class MonadAff, liftAff)
 import Control.Monad.Eff ( Eff )
 import Control.Monad.Error.Class ( catchError
                                  , class MonadError )
+import Control.Monad.Except.Trans ( runExceptT )
+import Control.Monad.Reader.Trans ( runReaderT )
 import Control.Monad.Reader.Class ( local
                                   , class MonadReader
                                   )
@@ -17,9 +19,10 @@ import GenerateClient.Types ( EmailProperties(..)
                             )
 import Network.HTTP.Affjax (AJAX)
 import Prelude ( bind
-               , (<$>)
                , pure
                , Unit
+               , (<$>)
+               , (<<<)
                )
 import Servant.PureScript.Affjax ( AjaxError(..)
                                  , errorToString
@@ -41,10 +44,11 @@ import Test.Spec.Runner ( run
                         , RunnerEffects
                         )
 
+import Util ( getSubscriptionStatus )
+
 makeSettings :: { baseURL :: String }
              -> SPSettings_ SPParams_
-             -> SPSettings_ SPParams_
-makeSettings uri = const $ defaultSettings $ SPParams_ uri
+makeSettings uri = defaultSettings $ SPParams_ uri
 
 clearNexusStaging :: { baseURL :: String }
 clearNexusStaging = { baseURL : "https://staging.clearnex.us" }
@@ -56,24 +60,13 @@ unsubscribedEmail =
 testUserToken :: Token
 testUserToken = Token { unToken : "testToken" }
 
-newtype ReadEither a = ReadEither ( Either AjaxError a )
-
-subscriptionStatus :: forall eff m.
-                      (MonadReader (SPSettings_ SPParams_) m, MonadError AjaxError m, MonadAff ( ajax :: AJAX | eff) m) => UriEmail
-                   -> m ( Either AjaxError EmailProperties )
-subscriptionStatus email = catchError
-  ( Right <$>
-    ( local
-      ( makeSettings clearNexusStaging )
-      $ getApiEmailByEmail email testUserToken ) )
-  ( \err -> pure $ Left err )
-
-main :: Eff ( RunnerEffects () ) Unit
 main = run [ consoleReporter ] do
   describe "Generated Client" do
     describe "getApiEmailByEmail" do
       it "returns false for an email that is not subscribed" do
-        isSubscribed <- subscriptionStatus unsubscribedEmail
+        isSubscribed <- ( runReaderT <<< runExceptT )
+                          ( getSubscriptionStatus unsubscribedEmail testUserToken )
+                            ( makeSettings clearNexusStaging )
         case isSubscribed of
           Left err -> fail $ errorToString err
           Right status ->
