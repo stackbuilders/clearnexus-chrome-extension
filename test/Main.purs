@@ -44,7 +44,9 @@ import Test.Spec.Runner ( run
                         , RunnerEffects
                         )
 
-import Util ( getSubscriptionStatus )
+import Util ( getSubscriptionStatus
+            , EPInstances(..)
+            )
 
 makeSettings :: { baseURL :: String }
              -> SPSettings_ SPParams_
@@ -70,5 +72,5 @@ main = run [ consoleReporter ] do
         case isSubscribed of
           Left err -> fail $ errorToString err
           Right status ->
-            status `shouldEqual`
-              EmailProperties { subscribed: false }
+            EPInstances status `shouldEqual`
+              EPInstances ( EmailProperties { subscribed: false } )
