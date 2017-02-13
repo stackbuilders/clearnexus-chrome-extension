@@ -8,9 +8,9 @@ dependencies:
     - output
 
   pre:
-    - npm install bower
-    - npm install purescript
-    - npm install pulp
+    - npm install -g bower
+    - npm install -g purescript
+    - npm install -g pulp
 
   override:
     - bower install
