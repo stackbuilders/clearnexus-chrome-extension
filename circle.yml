@@ -9,11 +9,11 @@ dependencies:
 
   pre:
     - npm install
-    - bower install
+    - npm run bower install
 
   override:
-    - pulp build
+    - npm run pulp build
 
 test:
   override:
-    - pulp test
+    - npm run pulp test
