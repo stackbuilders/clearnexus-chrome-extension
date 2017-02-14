@@ -6,13 +6,11 @@ dependencies:
     - bower_components
     - node_modules
     - .pulp-cache
-    - output
 
   pre:
-    - npm install 
+    - npm && bower install
 
   override:
-    - bower install
     - pulp build
 
 test:
