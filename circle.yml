@@ -4,13 +4,12 @@ machine:
 dependencies:
   cache_directories:
     - bower_components
+    - node_modules
     - .pulp-cache
     - output
 
   pre:
-    - npm install -g bower
-    - npm install -g purescript
-    - npm install -g pulp
+    - npm install 
 
   override:
     - bower install
