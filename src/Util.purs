@@ -1,11 +1,17 @@
 module Util where
 
 import Control.Monad.Aff ( Aff )
-import Control.Monad.Except.Trans ( ExceptT )
-import Control.Monad.Reader.Trans ( ReaderT )
+import Control.Monad.Except.Trans ( ExceptT
+                                  , runExceptT
+                                  )
+import Control.Monad.Reader.Trans ( ReaderT
+                                  , runReaderT
+                                  )
+import Data.Either ( Either )
 import Data.Eq ( class Eq
                , eq
                )
+import Function ( ($) )
 import Data.Show ( class Show
                  , show
                  )
@@ -13,21 +19,39 @@ import GenerateClient.Types ( EmailProperties(..)
                             , UriEmail
                             , Token
                             )
+import Prelude ( (<<<) )
 import Network.HTTP.Affjax ( AJAX )
 import Servant.PureScript.Affjax ( AjaxError )
-import Servant.PureScript.Settings ( SPSettings_ )
-import ServerAPI ( SPParams_
+import Servant.PureScript.Settings ( SPSettings_
+                                   , defaultSettings
+                                   )
+import ServerAPI ( SPParams_(..)
                  , getApiEmailByEmail
                  )
 
 getSubscriptionStatus :: forall eff.
-                         UriEmail
+			 { baseURL :: String }
+                      -> UriEmail
                       -> Token
-                      -> ExceptT AjaxError
-			   ( ReaderT ( SPSettings_ SPParams_ )
-			     ( Aff ( ajax :: AJAX | eff ) ) )
-                               EmailProperties
-getSubscriptionStatus = getApiEmailByEmail
+                      -> Aff ( ajax :: AJAX | eff )
+                           ( Either AjaxError EmailProperties )
+getSubscriptionStatus url email token =
+  ( runReaderT <<< runExceptT )
+    ( getSubscriptionStatus' email token )
+      ( makeSettings url )
+
+getSubscriptionStatus' :: forall eff.
+                          UriEmail
+                       -> Token
+                       -> ExceptT AjaxError
+                            ( ReaderT ( SPSettings_ SPParams_ )
+                              ( Aff ( ajax :: AJAX | eff ) ) )
+                                EmailProperties
+getSubscriptionStatus' = getApiEmailByEmail
+
+makeSettings :: { baseURL :: String }
+             -> SPSettings_ SPParams_
+makeSettings uri = defaultSettings $ SPParams_ uri
 
 newtype EPInstances = EPInstances EmailProperties
 

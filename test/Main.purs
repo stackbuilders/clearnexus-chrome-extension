@@ -1,7 +1,5 @@
 module Test.Main where
 
-import Control.Monad.Except.Trans ( runExceptT )
-import Control.Monad.Reader.Trans ( runReaderT )
 import Data.Either ( Either(..) )
 import Function ( ($) )
 import GenerateClient.Types ( EmailProperties(..)
@@ -12,10 +10,6 @@ import Prelude ( bind
                , (<<<)
                )
 import Servant.PureScript.Affjax ( errorToString )
-import Servant.PureScript.Settings ( SPSettings_
-                                   , defaultSettings
-                                   )
-import ServerAPI ( SPParams_(..) )
 import Test.Spec ( describe
                  , it
                  )
@@ -28,10 +22,6 @@ import Test.Spec.Runner ( run )
 import Util ( getSubscriptionStatus
             , EPInstances(..)
             )
-
-makeSettings :: { baseURL :: String }
-             -> SPSettings_ SPParams_
-makeSettings uri = defaultSettings $ SPParams_ uri
 
 clearNexusStaging :: { baseURL :: String }
 clearNexusStaging = { baseURL : "https://staging.clearnex.us" }
@@ -47,9 +37,10 @@ main = run [ consoleReporter ] do
   describe "Generated Client" do
     describe "getApiEmailByEmail" do
       it "returns false for an email that is not subscribed" do
-        isSubscribed <- ( runReaderT <<< runExceptT )
-                          ( getSubscriptionStatus unsubscribedEmail testUserToken )
-                            ( makeSettings clearNexusStaging )
+        isSubscribed <- getSubscriptionStatus
+                          clearNexusStaging
+                            unsubscribedEmail
+                              testUserToken
         case isSubscribed of
           Left err -> fail $ errorToString err
           Right status ->
