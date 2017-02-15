@@ -16,10 +16,9 @@ import Data.Show ( class Show
                  , show
                  )
 import GenerateClient.Types ( EmailProperties(..)
-                            , UriEmail
-                            , Token
                             )
 import Prelude ( (<<<) )
+import Prim ( String )
 import Network.HTTP.Affjax ( AJAX )
 import Servant.PureScript.Affjax ( AjaxError )
 import Servant.PureScript.Settings ( SPSettings_
@@ -31,8 +30,8 @@ import ServerAPI ( SPParams_(..)
 
 getSubscriptionStatus :: forall eff.
 			 { baseURL :: String }
-                      -> UriEmail
-                      -> Token
+                      -> String
+                      -> String
                       -> Aff ( ajax :: AJAX | eff )
                            ( Either AjaxError EmailProperties )
 getSubscriptionStatus url email token =
@@ -41,8 +40,8 @@ getSubscriptionStatus url email token =
       ( makeSettings url )
 
 getSubscriptionStatus' :: forall eff.
-                          UriEmail
-                       -> Token
+                          String
+                       -> String
                        -> ExceptT AjaxError
                             ( ReaderT ( SPSettings_ SPParams_ )
                               ( Aff ( ajax :: AJAX | eff ) ) )

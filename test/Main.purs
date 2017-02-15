@@ -3,11 +3,8 @@ module Test.Main where
 import Data.Either ( Either(..) )
 import Function ( ($) )
 import GenerateClient.Types ( EmailProperties(..)
-                            , UriEmail(..)
-                            , Token(..)
                             )
 import Prelude ( bind
-               , (<<<)
                )
 import Servant.PureScript.Affjax ( errorToString )
 import Test.Spec ( describe
@@ -24,22 +21,19 @@ import Util ( getSubscriptionStatus
             )
 
 clearNexusStaging :: { baseURL :: String }
-clearNexusStaging = { baseURL : "https://staging.clearnex.us" }
+clearNexusStaging = { baseURL : "https://staging.clearnex.us/" }
 
-notSubscribedEmail :: UriEmail
-notSubscribedEmail = 
-  UriEmail { unUriEmail : "notsubscribed@testing.com" } 
+notSubscribedEmail :: String
+notSubscribedEmail = "notsubscribed@testing.com"
 
-unsubscribedEmail :: UriEmail
-unsubscribedEmail = 
-  UriEmail { unUriEmail : "unsubscribed@testing.com" } 
+unsubscribedEmail :: String
+unsubscribedEmail = "unsubscribed@testing.com"
 
-subscribedEmail :: UriEmail
-subscribedEmail = 
-  UriEmail { unUriEmail : "subscribed@testing.com" } 
+subscribedEmail :: String
+subscribedEmail = "subscribed@testing.com"
 
-testUserToken :: Token
-testUserToken = Token { unToken : "testToken" }
+testUserToken :: String
+testUserToken = "18bfa273-0107-47c4-9aff-f7cd487bc19b"
 
 main = run [ consoleReporter ] do
   describe "Generated Client" do

@@ -5,12 +5,13 @@ module GenerateClient.API
   ( GetEmailPropertiesR )
 where
 
+import Data.Text ( Text )
 import GenerateClient.Types
 import Servant
 
 type GetEmailPropertiesR =
-  QueryParam "access_token" Token :>
+  QueryParam "access_token" Text :>
   "api" :>
   "email" :>
-  Capture "email" UriEmail :>
+  Capture "email" Text :>
   Get '[JSON] EmailProperties

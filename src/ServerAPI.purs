@@ -10,7 +10,7 @@ import Data.Argonaut.Generic.Aeson (decodeJson, encodeJson)
 import Data.Argonaut.Printer (printJson)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable(), toNullable)
-import GenerateClient.Types (EmailProperties, Token, UriEmail)
+import GenerateClient.Types (EmailProperties)
 import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AJAX)
 import Prim (String)
@@ -23,7 +23,7 @@ newtype SPParams_ = SPParams_ { baseURL :: String
 
 getApiEmailByEmail :: forall eff m.
                       (MonadReader (SPSettings_ SPParams_) m, MonadError AjaxError m, MonadAff ( ajax :: AJAX | eff) m)
-                      => UriEmail -> Token -> m EmailProperties
+                      => String -> String -> m EmailProperties
 getApiEmailByEmail email access_token = do
   spOpts_' <- ask
   let spOpts_ = case spOpts_' of SPSettings_ o -> o
