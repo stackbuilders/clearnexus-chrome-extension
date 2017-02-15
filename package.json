@@ -5,7 +5,8 @@
   "main": "",
   "scripts": {
     "bower": "bower",
-    "pulp": "pulp"
+    "pulp": "pulp",
+    "test": "pulp test"
   },
   "author": "",
   "license": "ISC",
