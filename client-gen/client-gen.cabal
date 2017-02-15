@@ -19,6 +19,7 @@ library
                      , GenerateClient.Types
                      , GenerateClient.Bridge
   build-depends:       base >= 4.7 && < 5
+                     , lens
                      , purescript-bridge
                      , servant-purescript
                      , servant-server
