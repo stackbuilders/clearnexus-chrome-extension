@@ -27,10 +27,10 @@ notSubscribedEmail :: String
 notSubscribedEmail = "notsubscribed@testing.com"
 
 unsubscribedEmail :: String
-unsubscribedEmail = "unsubscribed@testing.com"
+unsubscribedEmail = "foo@bar.com"
 
 subscribedEmail :: String
-subscribedEmail = "subscribed@testing.com"
+subscribedEmail = "nlander@stackbuilders.com"
 
 testUserToken :: String
 testUserToken = "18bfa273-0107-47c4-9aff-f7cd487bc19b"
