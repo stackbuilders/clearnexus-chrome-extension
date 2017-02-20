@@ -1,10 +1,10 @@
 module Test.Main where
 
 import Data.Either ( Either(..) )
-import Function ( ($) )
 import GenerateClient.Types ( EmailProperties(..)
                             )
 import Prelude ( bind
+               , ($)
                )
 import Servant.PureScript.Affjax ( errorToString )
 import Test.Spec ( describe
@@ -24,47 +24,72 @@ clearNexusStaging :: { baseURL :: String }
 clearNexusStaging = { baseURL : "https://staging.clearnex.us/" }
 
 notSubscribedEmail :: String
-notSubscribedEmail = "notsubscribed@testing.com"
+notSubscribedEmail = "notsubscribed@clearnex.us"
 
 unsubscribedEmail :: String
-unsubscribedEmail = "foo@bar.com"
+unsubscribedEmail = "unsubscribed@clearnex.us"
 
 subscribedEmail :: String
-subscribedEmail = "nlander@stackbuilders.com"
+subscribedEmail = "subscribed@clearnex.us"
+
+resubscribedEmail :: String
+resubscribedEmail = "resubscribed@clearnex.us"
 
 testUserToken :: String
-testUserToken = "18bfa273-0107-47c4-9aff-f7cd487bc19b"
+testUserToken = "chromeExtensionIntegrationTestAccessToken"
 
 main = run [ consoleReporter ] do
   describe "Generated Client" do
-    describe "getApiEmailByEmail" do
-      it "returns false for an email that has never subscribed" do
-        isSubscribed <- getSubscriptionStatus
-                          clearNexusStaging
-                            notSubscribedEmail
-                              testUserToken
-        case isSubscribed of
-          Left err -> fail $ errorToString err
-          Right status ->
-            EPInstances status `shouldEqual`
-              EPInstances ( EmailProperties { subscribed: false } )
-      it "returns true for an email that is subscribed" do
-        isSubscribed <- getSubscriptionStatus
-                          clearNexusStaging
-                            subscribedEmail
-                              testUserToken
-        case isSubscribed of
-          Left err -> fail $ errorToString err
-          Right status ->
-            EPInstances status `shouldEqual`
-              EPInstances ( EmailProperties { subscribed: true } )
-      it "returns false for an email that has unsubscribed" do
-        isSubscribed <- getSubscriptionStatus
-                          clearNexusStaging
-                            unsubscribedEmail
-                              testUserToken
-        case isSubscribed of
-          Left err -> fail $ errorToString err
-          Right status ->
-            EPInstances status `shouldEqual`
-              EPInstances ( EmailProperties { subscribed: false } )
+    describe "getSubscriptionStatus" do
+      testClientNeverSubscribedEmail
+      testClientSubscribedEmail
+      testClientUnsubscribedEmail
+      testClientResubscribedEmail
+
+testClientNeverSubscribedEmail =
+  it "returns false for an email that has never subscribed" do
+    isSubscribed <- getSubscriptionStatus
+                      clearNexusStaging
+                        notSubscribedEmail
+                          testUserToken
+    case isSubscribed of
+      Left err -> fail $ errorToString err
+      Right status ->
+        EPInstances status `shouldEqual`
+          EPInstances ( EmailProperties { subscribed: false } )
+
+testClientSubscribedEmail =
+  it "returns true for an email that is subscribed" do
+    isSubscribed <- getSubscriptionStatus
+                      clearNexusStaging
+                        subscribedEmail
+                          testUserToken
+    case isSubscribed of
+      Left err -> fail $ errorToString err
+      Right status ->
+        EPInstances status `shouldEqual`
+          EPInstances ( EmailProperties { subscribed: true } )
+
+testClientUnsubscribedEmail =
+  it "returns false for an email that has unsubscribed" do
+    isSubscribed <- getSubscriptionStatus
+                      clearNexusStaging
+                        unsubscribedEmail
+                          testUserToken
+    case isSubscribed of
+      Left err -> fail $ errorToString err
+      Right status ->
+        EPInstances status `shouldEqual`
+          EPInstances ( EmailProperties { subscribed: false } )
+
+testClientResubscribedEmail =
+  it "returns true for an email that has resubscribed" do
+    isSubscribed <- getSubscriptionStatus
+                      clearNexusStaging
+                        resubscribedEmail
+                          testUserToken
+    case isSubscribed of
+      Left err -> fail $ errorToString err
+      Right status ->
+        EPInstances status `shouldEqual`
+          EPInstances ( EmailProperties { subscribed: true } )
