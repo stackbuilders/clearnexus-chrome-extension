@@ -27,13 +27,16 @@ notSubscribedEmail :: String
 notSubscribedEmail = "notsubscribed@testing.com"
 
 unsubscribedEmail :: String
-unsubscribedEmail = "foo@bar.com"
+unsubscribedEmail = "unsubscribed@testing.com"
 
 subscribedEmail :: String
-subscribedEmail = "nlander@stackbuilders.com"
+subscribedEmail = "subscribed@testing.com"
+
+resubscribedEmail :: String
+resubscribedEmail = "resubscribed@testing.com"
 
 testUserToken :: String
-testUserToken = "18bfa273-0107-47c4-9aff-f7cd487bc19b"
+testUserToken = "chromeExtensionIntegrationTestAccessToken"
 
 main = run [ consoleReporter ] do
   describe "Generated Client" do
@@ -68,3 +71,13 @@ main = run [ consoleReporter ] do
           Right status ->
             EPInstances status `shouldEqual`
               EPInstances ( EmailProperties { subscribed: false } )
+      it "returns true for an email that has resubscribed" do
+        isSubscribed <- getSubscriptionStatus
+                          clearNexusStaging
+                            resubscribedEmail
+                              testUserToken
+        case isSubscribed of
+          Left err -> fail $ errorToString err
+          Right status ->
+            EPInstances status `shouldEqual`
+              EPInstances ( EmailProperties { subscribed: true } )
