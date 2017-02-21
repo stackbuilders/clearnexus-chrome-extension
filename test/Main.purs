@@ -24,16 +24,16 @@ clearNexusStaging :: { baseURL :: String }
 clearNexusStaging = { baseURL : "https://staging.clearnex.us/" }
 
 notSubscribedEmail :: String
-notSubscribedEmail = "notsubscribed@testing.com"
+notSubscribedEmail = "notsubscribed@clearnex.us"
 
 unsubscribedEmail :: String
-unsubscribedEmail = "unsubscribed@testing.com"
+unsubscribedEmail = "unsubscribed@clearnex.us"
 
 subscribedEmail :: String
-subscribedEmail = "subscribed@testing.com"
+subscribedEmail = "subscribed@clearnex.us"
 
 resubscribedEmail :: String
-resubscribedEmail = "resubscribed@testing.com"
+resubscribedEmail = "resubscribed@clearnex.us"
 
 testUserToken :: String
 testUserToken = "chromeExtensionIntegrationTestAccessToken"
