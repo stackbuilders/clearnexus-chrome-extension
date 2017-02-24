@@ -42,15 +42,16 @@ getSubscriptionStatus url email token =
 getSubscriptionStatus' :: forall eff.
                           String
                        -> String
-                       -> ExceptT AjaxError
-                            ( ReaderT ( SPSettings_ SPParams_ )
-                              ( Aff ( ajax :: AJAX | eff ) ) )
-                                EmailProperties
+                       -> AjaxRequest eff EmailProperties
 getSubscriptionStatus' = getApiEmailByEmail
 
 makeSettings :: { baseURL :: String }
              -> SPSettings_ SPParams_
 makeSettings uri = defaultSettings $ SPParams_ uri
+
+type AjaxRequest eff a = ExceptT AjaxError
+                           ( ReaderT ( SPSettings_ SPParams_ )
+                             ( Aff ( ajax :: AJAX | eff ) ) ) a
 
 newtype EPInstances = EPInstances EmailProperties
 
