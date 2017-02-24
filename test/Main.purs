@@ -1,10 +1,10 @@
 module Test.Main where
 
 import Data.Either ( Either(..) )
-import Function ( ($) )
 import GenerateClient.Types ( EmailProperties(..)
                             )
 import Prelude ( bind
+               , ($)
                )
 import Servant.PureScript.Affjax ( errorToString )
 import Test.Spec ( describe
