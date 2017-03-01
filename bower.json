@@ -15,7 +15,8 @@
     "purescript-globals": "^2.0.0",
     "purescript-affjax": "^3.0.2",
     "purescript-servant-support": "^6.0.0",
-    "purescript-profunctor-lenses": "^2.6.0"
+    "purescript-profunctor-lenses": "^2.6.0",
+    "purescript-dom": "^3.5.1"
   },
   "devDependencies": {
     "purescript-psci-support": "^2.0.0",
