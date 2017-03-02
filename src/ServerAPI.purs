@@ -18,8 +18,9 @@ import Servant.PureScript.Affjax (AjaxError(..), affjax, defaultRequest)
 import Servant.PureScript.Settings (SPSettings_(..), gDefaultToURLPiece)
 import Servant.PureScript.Util (encodeHeader, encodeListQuery, encodeQueryItem, encodeURLPiece, getResult)
 
-newtype SPParams_ = SPParams_ { baseURL :: String
-                              }
+
+newtype SPParams_ = SPParams_ { baseURL :: String }
+
 
 getApiEmailByEmail :: forall eff m.
                       (MonadReader (SPSettings_ SPParams_) m, MonadError AjaxError m, MonadAff ( ajax :: AJAX | eff) m)
@@ -31,7 +32,7 @@ getApiEmailByEmail email access_token = do
   let baseURL = spParams_.baseURL
   let httpMethod = "GET"
   let reqUrl = baseURL <> "api" <> "/" <> "email"
-        <> "/" <> encodeURLPiece spOpts_' email 
+        <> "/" <> encodeURLPiece spOpts_' email
         <> "?" <> encodeQueryItem spOpts_' "access_token" access_token
   let reqHeaders =
         []
@@ -42,4 +43,3 @@ getApiEmailByEmail email access_token = do
                  }
   affResp <- affjax affReq
   getResult affReq decodeJson affResp
-  

@@ -1,20 +1,12 @@
 module Util where
 
 import Control.Monad.Aff ( Aff )
-import Control.Monad.Except.Trans ( ExceptT
-                                  , runExceptT
-                                  )
-import Control.Monad.Reader.Trans ( ReaderT
-                                  , runReaderT
-                                  )
+import Control.Monad.Except.Trans ( ExceptT, runExceptT )
+import Control.Monad.Reader.Trans ( ReaderT, runReaderT )
 import Data.Either ( Either )
-import Data.Eq ( class Eq
-               , eq
-               )
+import Data.Eq ( class Eq , eq )
 import Function ( ($) )
-import Data.Show ( class Show
-                 , show
-                 )
+import Data.Show ( class Show , show )
 import GenerateClient.Types ( EmailProperties(..)
                             )
 import Prelude ( (<<<) )
@@ -22,11 +14,8 @@ import Prim ( String )
 import Network.HTTP.Affjax ( AJAX )
 import Servant.PureScript.Affjax ( AjaxError )
 import Servant.PureScript.Settings ( SPSettings_
-                                   , defaultSettings
-                                   )
-import ServerAPI ( SPParams_(..)
-                 , getApiEmailByEmail
-                 )
+                                   , defaultSettings )
+import ServerAPI ( SPParams_(..) , getApiEmailByEmail )
 
 getSubscriptionStatus :: forall eff.
 			 { baseURL :: String }
