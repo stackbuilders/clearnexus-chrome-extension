@@ -1,3 +1,5 @@
+"use strict"
+
 function queryEmails_(isBrowser) {
   return function(document_) {
     return function() {

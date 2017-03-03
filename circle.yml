@@ -13,7 +13,3 @@ dependencies:
 
   override:
     - npm run pulp build
-
-test:
-  override:
-    - npm run pulp test
