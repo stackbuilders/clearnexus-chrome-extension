@@ -4,7 +4,7 @@ module Test.QueryEmail ( testQueryForDivTags, testEmailExtraction ) where
 import Prelude ((==), bind, ($), Unit)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Aff (Aff)
-import DOM.QueryEmail (readEmails, DocElt)
+import DOM.QueryDocument (readEmails, DocElt)
 import DOM  (DOM)
 import Data.Array (length)
 import Data.Identity (Identity)

@@ -1,4 +1,4 @@
-module DOM.QueryEmail ( readEmails, DocElt ) where
+module DOM.QueryDocument ( readEmails, DocElt ) where
 
 
 import Prelude
@@ -10,6 +10,13 @@ import Data.Foreign (Foreign, readArray, readString)
 import Data.Foreign.Null (Null(..))
 import Data.Traversable (traverse)
 import Data.Maybe (Maybe)
+import DOM.HTML (window)
+import DOM.HTML.Types (htmlDocumentToDocument)
+import DOM.HTML.Window (document)
+import DOM.Node.ParentNode (querySelector)
+import DOM.Node.Types (Element, documentToParentNode)
+import Data.Nullable (toMaybe)
+
 
 
 type DocElt = { getElementsByClassName ::
@@ -27,3 +34,10 @@ readEmails mock = do
   values <- pure $ either (const []) id (runExcept $ readArray query)
   emails <- pure $ either (const []) id (runExcept $ traverse readString values)
   pure emails
+
+-- << Get the <textarea name="to"> tag in the Gmail document
+queryTextArea :: forall eff . Eff (dom :: DOM | eff) (Maybe Element)
+queryTextArea = do
+  win <- window
+  doc <- htmlDocumentToDocument <$> document win
+  toMaybe <$> querySelector "textarea[name=to]" (documentToParentNode doc)
