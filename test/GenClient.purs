@@ -4,21 +4,21 @@ module Test.GenClient (  testClientNeverSubscribedEmail
                        , testClientResubscribedEmail   ) where
 
 
-import Control.Monad.Aff ( Aff )
-import Control.Monad.State.Trans ( StateT )
-import Data.Either ( Either(..) )
-import Data.Identity ( Identity )
-import GenerateClient.Types ( EmailProperties(..) )
-import Prelude ( bind, ($), Unit )
-import Servant.PureScript.Affjax ( errorToString )
-import Network.HTTP.Affjax ( AJAX )
-import Test.Spec ( Group, it )
-import Test.Spec.Assertions ( fail, shouldEqual )
-import Util ( getSubscriptionStatus, EPInstances(..) )
+import Control.Monad.Aff (Aff)
+import Control.Monad.State.Trans (StateT)
+import Data.Either (Either(..))
+import Data.Identity (Identity)
+import GenerateClient.Types (EmailProperties(..))
+import Prelude (bind, ($), Unit)
+import Servant.PureScript.Affjax (errorToString)
+import Network.HTTP.Affjax (AJAX)
+import Test.Spec (Group, it)
+import Test.Spec.Assertions (fail, shouldEqual)
+import Util  (getSubscriptionStatus, EPInstances(..))
 
 
 type GenClientTest = forall eff .
-                       String -> StateT ( Array ( Group ( Aff ( ajax ∷ AJAX | eff ) Unit ) ) ) Identity Unit
+                       String -> StateT (Array (Group (Aff ( ajax ∷ AJAX | eff ) Unit))) Identity Unit
 
 
 clearNexusStaging :: { baseURL :: String }
