@@ -1,0 +1,7 @@
+/bower_components/
+/client-gen/.stack-work/
+/node_modules/
+/.pulp-cache/
+/output/
+/.psc*
+/.psa*

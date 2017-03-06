@@ -1,6 +1,12 @@
 module Main where
 
-import Lib
+import GenerateClient.Bridge
+import Language.PureScript.Bridge ( writePSTypes )
+import Servant.PureScript ( writeAPIModule )
+import System.Environment ( lookupEnv )
 
 main :: IO ()
-main = someFunc
+main = do
+  let path = "../src"
+  writeAPIModule path myBridgeProxy myApiProxy
+  writePSTypes path myBridge myTypes

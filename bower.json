@@ -1,0 +1,27 @@
+{
+  "name": "clearnexus-chrome-extension",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-prelude": "^2.3.0",
+    "purescript-console": "^2.0.0",
+    "purescript-aff": "^2.0.2",
+    "purescript-argonaut-generic-codecs": "^4.0.0",
+    "purescript-nullable": "^2.0.0",
+    "purescript-globals": "^2.0.0",
+    "purescript-affjax": "^3.0.2",
+    "purescript-servant-support": "^6.0.0",
+    "purescript-profunctor-lenses": "^2.6.0",
+    "purescript-dom": "^3.5.1",
+    "purescript-either": "^2.1.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^2.0.0",
+    "purescript-spec": "^0.12.2",
+    "purescript-preface": "^1.1.0"
+  }
+}
