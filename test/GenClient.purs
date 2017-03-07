@@ -21,8 +21,8 @@ type GenClientTest = forall eff .
                        String -> StateT (Array (Group (Aff ( ajax ∷ AJAX | eff ) Unit))) Identity Unit
 
 
-clearNexusStaging :: { baseURL :: String }
-clearNexusStaging = { baseURL : "https://staging.clearnex.us/" }
+clearNexusStaging :: String
+clearNexusStaging = "https://staging.clearnex.us/"
 
 notSubscribedEmail :: String
 notSubscribedEmail = "notsubscribed@clearnex.us"
@@ -40,10 +40,9 @@ resubscribedEmail = "resubscribed@clearnex.us"
 testClientNeverSubscribedEmail :: GenClientTest
 testClientNeverSubscribedEmail testUserToken =
   it "returns false for an email that has never subscribed" do
-    isSubscribed <- getSubscriptionStatus
-                      clearNexusStaging
-                        notSubscribedEmail
-                          testUserToken
+    isSubscribed <- getSubscriptionStatus clearNexusStaging
+                                          notSubscribedEmail
+                                          testUserToken
     case isSubscribed of
       Left err -> fail $ errorToString err
       Right status ->
@@ -54,10 +53,9 @@ testClientNeverSubscribedEmail testUserToken =
 testClientSubscribedEmail :: GenClientTest
 testClientSubscribedEmail testUserToken =
   it "returns true for an email that is subscribed" do
-    isSubscribed <- getSubscriptionStatus
-                      clearNexusStaging
-                        subscribedEmail
-                          testUserToken
+    isSubscribed <- getSubscriptionStatus clearNexusStaging
+                                          subscribedEmail
+                                          testUserToken
     case isSubscribed of
       Left err -> fail $ errorToString err
       Right status ->
@@ -67,10 +65,9 @@ testClientSubscribedEmail testUserToken =
 testClientUnsubscribedEmail :: GenClientTest
 testClientUnsubscribedEmail testUserToken =
   it "returns false for an email that has unsubscribed" do
-    isSubscribed <- getSubscriptionStatus
-                      clearNexusStaging
-                        unsubscribedEmail
-                          testUserToken
+    isSubscribed <- getSubscriptionStatus clearNexusStaging
+                                          unsubscribedEmail
+                                          testUserToken
     case isSubscribed of
       Left err -> fail $ errorToString err
       Right status ->
@@ -81,10 +78,9 @@ testClientUnsubscribedEmail testUserToken =
 testClientResubscribedEmail :: GenClientTest
 testClientResubscribedEmail testUserToken =
   it "returns true for an email that has resubscribed" do
-    isSubscribed <- getSubscriptionStatus
-                      clearNexusStaging
-                        resubscribedEmail
-                          testUserToken
+    isSubscribed <- getSubscriptionStatus clearNexusStaging
+                                          resubscribedEmail
+                                          testUserToken
     case isSubscribed of
       Left err -> fail $ errorToString err
       Right status ->

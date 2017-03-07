@@ -14,6 +14,7 @@ import Servant.PureScript.Affjax (AjaxError, affjax, defaultRequest)
 import Servant.PureScript.Settings (SPSettings_(SPSettings_))
 import Servant.PureScript.Util (encodeQueryItem, encodeURLPiece, getResult)
 
+
 newtype SPParams_ = SPParams_ { baseURL :: String }
 
 

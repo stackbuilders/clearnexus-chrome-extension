@@ -1,10 +1,8 @@
 module DOM.QueryDocument ( readEmails
                          , queryGmailElt
-                         , textAreaListener
-                         , composeBtnListener
-                         , clickEvent
                          , delayExtInjection
                          , DocElt      ) where
+
 
 import Prelude
 import Control.Monad.Eff (Eff)
@@ -52,29 +50,13 @@ queryGmailElt selector = do
   pure $ elementToEventTarget <$> elt
 
 
--- << Listener for events in the <textarea name="to"> element
-textAreaListener :: forall eff . Event
-                              -> Eff (dom :: DOM, alert ∷ ALERT | eff) Unit
-textAreaListener evt = do
-  win <- window
-  alert "You input a new email!" win
-
-
--- << Listener for events in the <div role="button" gh="cm" > element
-composeBtnListener :: forall eff . Event
-                                -> Eff (dom :: DOM, alert ∷ ALERT | eff) Unit
-composeBtnListener evt = do
-  win <- window
-  alert "You pressed the Compose Btn!" win
-
-
 -- << Wrapper to delay the injection of our extension's JavaScript code until a
 -- << specific element has been found.
 delayExtInjection :: forall eff . String
                                -> EventType
                                -> (Event -> Eff (dom :: DOM, timer :: TIMER | eff) Unit)
                                -> Eff (dom :: DOM, timer :: TIMER | eff) Unit
-delayExtInjection query evetType listener = do
+delayExtInjection query eventType listener = do
   loop query
   where
     loop q = do
@@ -84,12 +66,7 @@ delayExtInjection query evetType listener = do
           setTimeout 1000 (loop q)
           pure unit
         Just elt ->
-          addEventListener clickEvent
+          addEventListener eventType
                            (eventListener listener)
                            false
                            elt
-
-
--- << We are going to listen to *keypress* events
-clickEvent :: EventType
-clickEvent = EventType "click"

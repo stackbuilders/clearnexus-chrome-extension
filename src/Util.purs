@@ -1,4 +1,4 @@
-module Util where
+module Util ( getSubscriptionStatus, EPInstances(..) ) where
 
 
 import Control.Monad.Aff (Aff)
@@ -30,28 +30,19 @@ instance showEPInstances :: Show EPInstances where
     show subscribed
 
 instance eqEPInstances :: Eq EPInstances where
-  eq (EPInstances (EmailProperties { subscribed : s1 }))
-     (EPInstances (EmailProperties { subscribed : s2 } )) = eq s1 s2
-
-
-getSubscriptionStatus' :: forall eff .
-                          String
-                       -> String
-                       -> AjaxRequest eff EmailProperties
-getSubscriptionStatus' = getApiEmailByEmail
+  eq (EPInstances (EmailProperties { subscribed: s1 }))
+     (EPInstances (EmailProperties { subscribed: s2 })) = eq s1 s2
 
 
 getSubscriptionStatus :: forall eff .
-			 { baseURL :: String }
+		         String
                       -> String
                       -> String
-                      -> Aff (ajax :: AJAX | eff)
-                             (Either AjaxError EmailProperties)
+                      -> Aff (ajax :: AJAX | eff) (Either AjaxError EmailProperties)
 getSubscriptionStatus url email token =
   (runReaderT <<< runExceptT)
-    (getSubscriptionStatus' email token)
-      (makeSettings url)
-
-
-makeSettings :: { baseURL :: String } -> SPSettings_ SPParams_
-makeSettings uri = defaultSettings $ SPParams_ uri
+    (getApiEmailByEmail email token)
+       (makeSettings { baseURL: url })
+  where
+    makeSettings :: { baseURL :: String } -> SPSettings_ SPParams_
+    makeSettings uri = defaultSettings $ SPParams_ uri
