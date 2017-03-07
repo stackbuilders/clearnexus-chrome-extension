@@ -7,8 +7,15 @@
 
   "browser_action": {
     "default_icon": "logo.png",
-    "default_popup": "notification.html"
+    "default_popup": "popup.html"
   },
 
-  "permissions": ["tabs"]
+  "content_scripts": [
+    {
+      "matches": ["*://mail.google.com/*"],
+      "js": ["clearnexus.js"]
+    }
+  ],
+
+  "permissions": ["tabs", "management"]
 }

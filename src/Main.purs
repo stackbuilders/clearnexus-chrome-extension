@@ -3,23 +3,15 @@ module Main where
 
 import Prelude
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
-import Data.Maybe (Maybe(..))
+import Control.Monad.Eff.Console (CONSOLE)
+import Control.Monad.Eff.Timer (TIMER)
 import DOM (DOM)
-import DOM.Event.EventTarget (addEventListener, eventListener)
 import DOM.HTML.Types (ALERT)
-import DOM.QueryDocument (extensionListener, keyPressEvt, queryTextArea)
+import DOM.QueryDocument (clickEvent, composeBtnListener, delayExtInjection)
 
 
 main :: forall eff . Eff (  alert :: ALERT
+                         ,  timer :: TIMER
                          ,  console :: CONSOLE
                          ,  dom :: DOM | eff  ) Unit
-main = do
-  maybeTextArea <- queryTextArea
-  case maybeTextArea of
-    Nothing -> log "Nothing Happened"
-    Just textArea -> do
-      addEventListener keyPressEvt
-                       (eventListener extensionListener)
-                       false
-                       textArea
+main = delayExtInjection "div[gh=cm]" clickEvent composeBtnListener
