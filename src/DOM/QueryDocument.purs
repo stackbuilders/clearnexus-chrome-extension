@@ -1,5 +1,5 @@
 module DOM.QueryDocument ( readEmails
-                         , queryGmailElt
+                         , queryDocElt
                          , delayExtInjection
                          , DocElt      ) where
 
@@ -10,7 +10,7 @@ import Control.Monad.Eff.Timer (TIMER, setTimeout)
 import Control.Monad.Except (runExcept)
 import DOM (DOM)
 import DOM.Event.EventTarget (addEventListener, eventListener)
-import DOM.Event.Types (Event, EventTarget, EventType(..))
+import DOM.Event.Types (Event, EventTarget, EventType)
 import DOM.HTML (window)
 import DOM.HTML.Types (ALERT, htmlDocumentToDocument)
 import DOM.HTML.Window (alert, document)
@@ -42,8 +42,8 @@ readEmails mock = do
 
 
 -- << Query a Gmail doc element acording to a query-selector
-queryGmailElt :: forall eff . String -> Eff (dom :: DOM | eff) (Maybe EventTarget)
-queryGmailElt selector = do
+queryDocElt :: forall eff . String -> Eff (dom :: DOM | eff) (Maybe EventTarget)
+queryDocElt selector = do
   win <- window
   doc <- htmlDocumentToDocument <$> document win
   elt <-toMaybe <$> querySelector selector (documentToParentNode doc)
@@ -60,7 +60,7 @@ delayExtInjection query eventType listener = do
   loop query
   where
     loop q = do
-      maybeElt <- queryGmailElt q
+      maybeElt <- queryDocElt q
       case maybeElt of
         Nothing -> do
           setTimeout 1000 (loop q)

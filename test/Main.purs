@@ -9,11 +9,13 @@ import Control.Monad.Eff.Timer (TIMER)
 import Data.Maybe (Maybe(..))
 import Prelude (Unit, bind)
 import DOM (DOM)
+import DOM.HTML.Types (ALERT)
 import Test.Spec (describe)
 import Node.Process (PROCESS, lookupEnv, exit)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (run)
 import Test.QueryEmail (testQueryForDivTags, testEmailExtraction)
+import Test.Storage (testQueryForToken)
 import Test.GenClient (  testClientNeverSubscribedEmail
                        , testClientSubscribedEmail
                        , testClientUnsubscribedEmail
@@ -25,6 +27,7 @@ main :: forall eff . Eff (  process :: PROCESS
                           , timer :: TIMER
                           , avar :: AVAR
                           , ajax :: AJAX
+                          , alert :: ALERT
                           , dom :: DOM | eff )
                           Unit
 main =  do
@@ -42,3 +45,4 @@ main =  do
           testClientResubscribedEmail token
           testQueryForDivTags
           testEmailExtraction
+          testQueryForToken
