@@ -1,4 +1,5 @@
-module Test.QueryEmail ( testQueryForDivTags, testEmailExtraction ) where
+module Test.QueryEmail ( testQueryForDivTags
+                       , testEmailExtraction ) where
 
 
 import Prelude ((==), bind, ($), Unit)
@@ -15,7 +16,7 @@ import Data.Maybe (Maybe(..))
 
 
 type QueryEmailTest = forall eff .
-                        StateT (Array (Group (Aff (dom ∷ DOM | eff) Unit))) Identity Unit
+                      StateT (Array (Group (Aff (dom ∷ DOM | eff) Unit))) Identity Unit
 
 
 --- <<  Mock to test the correct searching of <div> tags with class vR
@@ -32,12 +33,12 @@ divTags = { getElementsByClassName: \class_ ->
 emailAttrs :: DocElt
 emailAttrs = { getElementsByClassName: \_ -> [ { firstChild: { getAttribute: \attr ->
                                                                 if attr == "email"
-                                                                then "omaturana@gmail.com"
-                                                                else "NO-EMAIL" } }
+                                                                  then "omaturana@gmail.com"
+                                                                  else "NO-EMAIL" } }
                                              , { firstChild: { getAttribute: \attr ->
                                                                 if attr == "email"
-                                                                then "gpalacios@gmail.com"
-                                                                else "NO-EMAIL" } } ]
+                                                                  then "gpalacios@gmail.com"
+                                                                  else "NO-EMAIL" } } ]
              }
 
 
@@ -46,6 +47,7 @@ testQueryForDivTags =
   it "passes *vR* class name to the JS function which filters divs by class-name" do
     values <- liftEff $ readEmails $ Just divTags
     length values `shouldEqual` 2
+
 
 testEmailExtraction :: QueryEmailTest
 testEmailExtraction =

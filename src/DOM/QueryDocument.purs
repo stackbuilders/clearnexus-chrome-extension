@@ -12,8 +12,8 @@ import DOM (DOM)
 import DOM.Event.EventTarget (addEventListener, eventListener)
 import DOM.Event.Types (Event, EventTarget, EventType)
 import DOM.HTML (window)
-import DOM.HTML.Types (ALERT, htmlDocumentToDocument)
-import DOM.HTML.Window (alert, document)
+import DOM.HTML.Types (htmlDocumentToDocument)
+import DOM.HTML.Window (document)
 import DOM.Node.ParentNode (querySelector)
 import DOM.Node.Types (documentToParentNode, elementToEventTarget)
 import Data.Either (either)
@@ -46,16 +46,17 @@ queryDocElt :: forall eff . String -> Eff (dom :: DOM | eff) (Maybe EventTarget)
 queryDocElt selector = do
   win <- window
   doc <- htmlDocumentToDocument <$> document win
-  elt <-toMaybe <$> querySelector selector (documentToParentNode doc)
+  elt <- toMaybe <$> querySelector selector (documentToParentNode doc)
   pure $ elementToEventTarget <$> elt
 
 
 -- << Wrapper to delay the injection of our extension's JavaScript code until a
 -- << specific element has been found.
-delayExtInjection :: forall eff . String
-                               -> EventType
-                               -> (Event -> Eff (dom :: DOM, timer :: TIMER | eff) Unit)
-                               -> Eff (dom :: DOM, timer :: TIMER | eff) Unit
+delayExtInjection :: forall eff .
+                     String
+                  -> EventType
+                  -> (Event -> Eff (dom :: DOM, timer :: TIMER | eff) Unit)
+                  -> Eff (dom :: DOM, timer :: TIMER | eff) Unit
 delayExtInjection query eventType listener = do
   loop query
   where

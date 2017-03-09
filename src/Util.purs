@@ -29,6 +29,7 @@ instance showEPInstances :: Show EPInstances where
   show (EPInstances (EmailProperties { subscribed })) =
     show subscribed
 
+
 instance eqEPInstances :: Eq EPInstances where
   eq (EPInstances (EmailProperties { subscribed: s1 }))
      (EPInstances (EmailProperties { subscribed: s2 })) = eq s1 s2

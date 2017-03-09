@@ -1,6 +1,5 @@
 "use strict"
 
-
 exports.uncurriedSaveToken = function(document_, chrome_) {
   return function() {
     //Dinamically assign the DOM and Chrome if this is called in Browser
@@ -20,8 +19,6 @@ exports.uncurriedSaveToken = function(document_, chrome_) {
       });
     }
 
-    console.log(token);
-
-    return token ;
+    return token;
   };
 };

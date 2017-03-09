@@ -4,6 +4,7 @@
   "name": "ClearNexus chrome extension",
   "description": "ClearNexus chrome extension for Google Chrome",
   "version": "1.0",
+  "homepage_url": "https://clearnex.us/",
 
   "browser_action": {
     "default_icon": "logo.png",

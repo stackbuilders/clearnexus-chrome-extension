@@ -33,19 +33,22 @@ type Chrome = { storage ::
 foreign import uncurriedSaveToken :: forall eff . Fn2 (Null OptDoc) (Null Chrome) (Eff (alert :: ALERT | eff) Foreign)
 
 
-saveToken :: forall eff . Maybe OptDoc
-                       -> Maybe Chrome
-                       -> Eff (dom :: DOM, alert :: ALERT  | eff) (Maybe String)
+saveToken :: forall eff .
+             Maybe OptDoc
+          -> Maybe Chrome
+          -> Eff (dom :: DOM, alert :: ALERT  | eff) (Maybe String)
 saveToken optDoc chrome = do
-   value <- curried (Null optDoc) (Null chrome)
-   let eitherDoc = unNull <$> runExcept (readNull readString value)
-   case eitherDoc of
-     Left _ ->  pure Nothing
-     Right (maybeDoc) -> pure maybeDoc
+  value <- curried (Null optDoc) (Null chrome)
+  let eitherDoc = unNull <$> runExcept (readNull readString value)
+  case eitherDoc of
+    Left _ ->  pure Nothing
+    Right (maybeDoc) -> pure maybeDoc
   where
     curried = runFn2 uncurriedSaveToken
 
-addListenerToSaveBtn :: forall eff . Eff (dom :: DOM, alert :: ALERT  | eff) Unit
+
+addListenerToSaveBtn :: forall eff .
+                        Eff (dom :: DOM, alert :: ALERT  | eff) Unit
 addListenerToSaveBtn = do
   maybeElt <- queryDocElt("[id=save]")
   case maybeElt of

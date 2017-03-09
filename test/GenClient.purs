@@ -18,7 +18,7 @@ import Util  (getSubscriptionStatus, EPInstances(..))
 
 
 type GenClientTest = forall eff .
-                       String -> StateT (Array (Group (Aff ( ajax ∷ AJAX | eff ) Unit))) Identity Unit
+                     String -> StateT (Array (Group (Aff ( ajax ∷ AJAX | eff ) Unit))) Identity Unit
 
 
 clearNexusStaging :: String
@@ -61,6 +61,7 @@ testClientSubscribedEmail testUserToken =
       Right status ->
         EPInstances status `shouldEqual`
           EPInstances ( EmailProperties { subscribed: true } )
+
 
 testClientUnsubscribedEmail :: GenClientTest
 testClientUnsubscribedEmail testUserToken =

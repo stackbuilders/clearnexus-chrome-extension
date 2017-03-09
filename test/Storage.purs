@@ -16,16 +16,16 @@ import Data.Function.Uncurried (mkFn2)
 
 
 type QueryTokenTest = forall eff .
-                        StateT (Array (Group (Aff (dom ∷ DOM, alert :: ALERT | eff) Unit))) Identity Unit
-
+                      StateT (Array (Group (Aff (dom ∷ DOM, alert :: ALERT | eff) Unit))) Identity Unit
 
 
 -- << Mock to test the correct searching in options document by "authtoken" id in <input> tag
 doc :: OptDoc
 doc = { getElementById: (\str ->  if str == "authtoken"
-                                  then { value: "Some-Token" }
-                                  else { value: "Invalid-Id" })
+                                    then { value: "Some-Token" }
+                                    else { value: "Invalid-Id" })
       }
+
 
 -- << Mock of the chrome object provided for extensions
 chrome :: Chrome
@@ -35,7 +35,6 @@ chrome = { storage: {
                  }
               }
          }
-
 
 
 testQueryForToken :: QueryTokenTest
