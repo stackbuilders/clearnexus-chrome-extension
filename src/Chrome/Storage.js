@@ -6,7 +6,7 @@ exports.uncurriedSaveToken = function(document_, chrome_) {
     var document = document_.value0 || window.document;
     var chrome =  chrome_.value0 || window.chrome;
 
-    var input = document.getElementById('authtoken');
+    var input = document.getElementById('authtoken_cn');
     var token = input ? input.value : null;
 
     if (token) {
@@ -14,7 +14,7 @@ exports.uncurriedSaveToken = function(document_, chrome_) {
 	authtoken: token
       }, function() {
 	alert('Your token has been saved');
-	document.getElementById('save').disabled = true;
+	document.getElementById('save_tkn_cn').disabled = true;
 	input.disabled = true;
       });
     }

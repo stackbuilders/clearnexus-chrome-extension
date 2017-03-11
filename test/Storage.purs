@@ -21,7 +21,7 @@ type QueryTokenTest = forall eff .
 
 -- << Mock to test the correct searching in options document by "authtoken" id in <input> tag
 doc :: OptDoc
-doc = { getElementById: (\str ->  if str == "authtoken"
+doc = { getElementById: (\str ->  if str == "authtoken_cn"
                                     then { value: "Some-Token" }
                                     else { value: "Invalid-Id" })
       }
@@ -39,6 +39,6 @@ chrome = { storage: {
 
 testQueryForToken :: QueryTokenTest
 testQueryForToken =
-  it "passes *authoken* id to the JS function which queries the clearnexus token" do
+  it "passes *authoken_cn* id to the JS function which queries the clearnexus token" do
     maybeToken <- liftEff $ saveToken (Just doc) (Just chrome)
     maybeToken `shouldEqual` Just "Some-Token"

@@ -22,6 +22,5 @@
   "permissions": ["activeTab",
                   "tabs",
 		  "storage",
-		  "*://staging.clearnex.us/*"],
-  "options_page": "options.html"
+		  "*://staging.clearnex.us/*"]
 }

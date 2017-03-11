@@ -11,7 +11,7 @@ import DOM (DOM)
 import DOM.Event.Types (EventType(..))
 import DOM.HTML.Types (ALERT)
 import DOM.Event.EventTarget (addEventListener, eventListener)
-import Data.Either (Either(..))
+import Data.Either (either)
 import Data.Foreign (Foreign, readString)
 import Data.Foreign.Null (Null(..), readNull, unNull)
 import Data.Function.Uncurried (Fn2, runFn2)
@@ -40,9 +40,7 @@ saveToken :: forall eff .
 saveToken optDoc chrome = do
   value <- curried (Null optDoc) (Null chrome)
   let eitherDoc = unNull <$> runExcept (readNull readString value)
-  case eitherDoc of
-    Left _ ->  pure Nothing
-    Right (maybeDoc) -> pure maybeDoc
+  either (const $ pure Nothing) pure eitherDoc
   where
     curried = runFn2 uncurriedSaveToken
 
@@ -50,7 +48,7 @@ saveToken optDoc chrome = do
 addListenerToSaveBtn :: forall eff .
                         Eff (dom :: DOM, alert :: ALERT  | eff) Unit
 addListenerToSaveBtn = do
-  maybeElt <- queryDocElt("[id=save]")
+  maybeElt <- queryDocElt("[id=save_tkn_cn]")
   case maybeElt of
     Nothing -> pure unit
     Just btn -> do

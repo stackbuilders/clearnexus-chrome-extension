@@ -40,18 +40,21 @@ reqCallback :: forall eff r .
             -> { authtoken :: String | r }
             -> Eff ( dom :: DOM
                    , console :: CONSOLE
+                   , timer ∷ TIMER
                    , alert :: ALERT
                    , ajax :: AJAX | eff ) Unit
 reqCallback serverUrl email items = do
   runAff logShow successCallback (getSubscriptionStatus serverUrl email items.authtoken)
   pure unit
   where
-    successCallback (Left (AjaxError obj )) = logShow "There was an error in AJAX Request"
+    successCallback (Left (AjaxError obj)) = do
+      win <- window
+      alert "Register a valid ClearNexus token!" win
     successCallback (Right (EmailProperties obj)) = do
       win <- window
       if obj.subscribed
         then alert "This user is subscribed!" win
-        else alert "This user is not subscribed..." win
+        else alert "This user is NOT subscribed..." win
 
 
 -- << Listener for events in the <textarea name="to"> element
@@ -61,27 +64,28 @@ textAreaListener :: forall eff .
                         , console :: CONSOLE
                         , alert :: ALERT
                         , timer :: TIMER
-                        , ajax :: AJAX | eff) Unit
+                        , ajax :: AJAX | eff ) Unit
 textAreaListener event = do
   maybeElt <- queryDocElt "div[class=vR]"
   case maybeElt of
     Nothing -> do
-      -- Poll events every two seconds not to block the browser.
-      setTimeout 2000 (textAreaListener event)
+      -- Poll events every second not to block the browser
+      setTimeout 1000 (textAreaListener event)
       pure unit
-    Just textArea -> do
-      addEventListener (EventType "click")
-                       (eventListener listener)
+    Just textArea ->
+      addEventListener (EventType "dblclick")
+                       (eventListener $ emailListener)
                        false
                        textArea
   where
-    listener evt = do
+    -- Listener for emails in textarea
+    emailListener evt = do
       win <- window
       emails <- readEmails Nothing
       case head emails of
         Nothing -> do
-          -- Poll events every two seconds not to block the browser.
-          setTimeout 2000 (listener evt)
+          -- Poll events every 500 mls not to block the browser
+          setTimeout 500 $ emailListener evt
           pure unit
         Just email -> do
           let callback = mkEffFn1 $ reqCallback clearnexusUrl email

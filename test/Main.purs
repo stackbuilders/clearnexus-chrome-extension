@@ -19,7 +19,8 @@ import Test.Storage (testQueryForToken)
 import Test.GenClient (  testClientNeverSubscribedEmail
                        , testClientSubscribedEmail
                        , testClientUnsubscribedEmail
-                       , testClientResubscribedEmail  )
+                       , testClientResubscribedEmail
+                       , testApiCallWithInvalidToken   )
 
 
 main :: forall eff . Eff (  process :: PROCESS
@@ -43,6 +44,7 @@ main =  do
           testClientSubscribedEmail token
           testClientUnsubscribedEmail token
           testClientResubscribedEmail token
+          testApiCallWithInvalidToken
           testQueryForDivTags
           testEmailExtraction
           testQueryForToken
