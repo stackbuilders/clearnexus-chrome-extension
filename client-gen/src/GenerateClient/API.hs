@@ -1,13 +1,15 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module GenerateClient.API
-  ( GetEmailPropertiesR )
-where
+module GenerateClient.API (API) where
 
-import Data.Text ( Text )
+
+import Data.Text (Text)
 import GenerateClient.Types
 import Servant
+
+
+newtype CreateLinkData = CreateLinkData { cldTargetEmail :: Text }
 
 type GetEmailPropertiesR =
   QueryParam "access_token" Text :>
@@ -15,3 +17,12 @@ type GetEmailPropertiesR =
   "email" :>
   Capture "email" Text :>
   Get '[JSON] EmailProperties
+
+type PostLinksR =
+  QueryParam "access_token" Text :>
+  "api" :>
+  "links" :>
+  ReqBody '[JSON] CreateLinkData :>
+  Post '[JSON] LinkData
+
+type API = GetEmailPropertiesR :<|> PostLinksR

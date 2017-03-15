@@ -2,19 +2,22 @@ module Test.GenClient (  testClientNeverSubscribedEmail
                        , testClientSubscribedEmail
                        , testClientUnsubscribedEmail
                        , testClientResubscribedEmail
-                       , testApiCallWithInvalidToken   ) where
+                       , testApiCallWithInvalidToken
+                       , blabla                       ) where
 
 
 import Prelude (bind, ($), Unit, show)
+import Control.Monad.Aff.Console (logShow)
 import Control.Monad.Aff (Aff)
 import Control.Monad.State.Trans (StateT)
 import Data.Either (Either(..))
 import Data.Identity (Identity)
-import GenerateClient.Types (EmailProperties(..))
+import GenerateClient.Types ( EmailProperties(..)
+                            , LinkData(..)      )
 import Network.HTTP.Affjax (AJAX)
-import Test.Spec (Group, it)
+import Test.Spec (Group, it, itOnly)
 import Test.Spec.Assertions (fail, shouldEqual)
-import Util  (getSubscriptionStatus)
+import Util  (getSubscriptionStatus, postNewLink)
 import Servant.PureScript.Affjax ( AjaxError(..)
                                  , ErrorDescription(..)
                                  , errorToString      )
@@ -25,7 +28,7 @@ type GenClientTest = forall eff .
 
 
 clearNexusStaging :: String
-clearNexusStaging = "https://staging.clearnex.us/"
+clearNexusStaging = "http://localhost:8000/"
 
 notSubscribedEmail :: String
 notSubscribedEmail = "notsubscribed@clearnex.us"
@@ -102,10 +105,31 @@ testClientResubscribedEmail testUserToken =
 
 -- << Test a call to the API with an invalid authetication token
 testApiCallWithInvalidToken :: forall eff .
-                          StateT (Array (Group (Aff ( ajax ∷ AJAX | eff ) Unit))) Identity Unit
+                               StateT (Array (Group (Aff ( ajax ∷ AJAX | eff ) Unit))) Identity Unit
 testApiCallWithInvalidToken =
   it "returns Status Code 500 when called with Invalid Token" do
     response <- getSubscriptionStatus clearNexusStaging
-                                          resubscribedEmail
-                                          "SOME-INVALID-TOKEN"
+                                      resubscribedEmail
+                                      "SOME-INVALID-TOKEN"
     resToString response `shouldEqual` "(StatusCode 500)"
+
+
+-- <<
+
+
+blabla userToken =
+  itOnly "works" do
+    response <- postNewLink clearNexusStaging
+                            subscribedEmail
+                            userToken
+    case response  of
+      (Left (AjaxError err)) -> logShow $ errorDescToString err.description
+      (Right (LinkData linkData)) -> do
+        logShow linkData.ldEmail
+        1 `shouldEqual` 1
+  where
+    errorDescToString :: ErrorDescription -> String
+    errorDescToString (ConnectionError desc) = desc
+    errorDescToString (DecodingError desc) = desc
+    errorDescToString (ParsingError desc) = desc
+    errorDescToString (UnexpectedHTTPStatus obj) = show $ obj.status

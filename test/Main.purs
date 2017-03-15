@@ -20,7 +20,8 @@ import Test.GenClient (  testClientNeverSubscribedEmail
                        , testClientSubscribedEmail
                        , testClientUnsubscribedEmail
                        , testClientResubscribedEmail
-                       , testApiCallWithInvalidToken   )
+                       , testApiCallWithInvalidToken
+                       , blabla                       )
 
 
 main :: forall eff . Eff (  process :: PROCESS
@@ -48,3 +49,4 @@ main =  do
           testQueryForDivTags
           testEmailExtraction
           testQueryForToken
+          blabla token
