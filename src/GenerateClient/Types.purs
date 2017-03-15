@@ -17,7 +17,7 @@ newtype EmailProperties =
 derive instance genericEmailProperties :: Generic EmailProperties
 
 --------------------------------------------------------------------------------
-_EmailProperties :: Prism' EmailProperties { subscribed :: Boolean}
+_EmailProperties :: Prism' EmailProperties { subscribed :: Boolean }
 _EmailProperties = prism' EmailProperties f
   where
     f (EmailProperties r) = Just r

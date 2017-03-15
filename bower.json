@@ -1,5 +1,8 @@
 {
   "name": "clearnexus-chrome-extension",
+  "engines": {
+    "node": "6.10.0"
+  },
   "ignore": [
     "**/.*",
     "node_modules",
@@ -17,7 +20,8 @@
     "purescript-servant-support": "^6.0.0",
     "purescript-profunctor-lenses": "^2.6.0",
     "purescript-dom": "^3.5.1",
-    "purescript-either": "^2.1.0"
+    "purescript-either": "^2.1.0",
+    "purescript-eff-functions": "^2.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^2.0.0",

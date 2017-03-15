@@ -1,25 +1,26 @@
 module Test.Main where
 
 
-import Control.Monad.Eff.Console ( CONSOLE, log )
-import Control.Monad.Eff ( Eff )
-import Control.Monad.Aff.AVar ( AVAR )
-import Network.HTTP.Affjax ( AJAX )
-import Control.Monad.Eff.Timer ( TIMER )
-import Data.Maybe ( Maybe(..) )
-import Prelude ( Unit, bind )
-import DOM ( DOM )
-import Test.Spec ( describe )
-import Node.Process ( PROCESS, lookupEnv, exit )
-import Test.Spec.Reporter.Console ( consoleReporter )
-import Test.Spec.Runner ( run )
-import Test.QueryEmail (  testFilteringOfInputElements
-                        , testQueryForInputTag
-                        , testQueryForNameAttr        )
+import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Eff (Eff)
+import Control.Monad.Aff.AVar (AVAR)
+import Network.HTTP.Affjax (AJAX)
+import Control.Monad.Eff.Timer (TIMER)
+import Data.Maybe (Maybe(..))
+import Prelude (Unit, bind)
+import DOM (DOM)
+import DOM.HTML.Types (ALERT)
+import Test.Spec (describe)
+import Node.Process (PROCESS, lookupEnv, exit)
+import Test.Spec.Reporter.Console (consoleReporter)
+import Test.Spec.Runner (run)
+import Test.QueryEmail (testQueryForDivTags, testEmailExtraction)
+import Test.Storage (testQueryForToken)
 import Test.GenClient (  testClientNeverSubscribedEmail
                        , testClientSubscribedEmail
                        , testClientUnsubscribedEmail
-                       , testClientResubscribedEmail  )
+                       , testClientResubscribedEmail
+                       , testApiCallWithInvalidToken   )
 
 
 main :: forall eff . Eff (  process :: PROCESS
@@ -27,6 +28,7 @@ main :: forall eff . Eff (  process :: PROCESS
                           , timer :: TIMER
                           , avar :: AVAR
                           , ajax :: AJAX
+                          , alert :: ALERT
                           , dom :: DOM | eff )
                           Unit
 main =  do
@@ -42,6 +44,7 @@ main =  do
           testClientSubscribedEmail token
           testClientUnsubscribedEmail token
           testClientResubscribedEmail token
-          testFilteringOfInputElements
-          testQueryForInputTag
-          testQueryForNameAttr
+          testApiCallWithInvalidToken
+          testQueryForDivTags
+          testEmailExtraction
+          testQueryForToken

@@ -3,24 +3,16 @@ module ServerAPI where
 
 
 import Prelude
-import Control.Monad.Aff.Class ( class MonadAff, liftAff )
-import Control.Monad.Error.Class ( class MonadError )
-import Control.Monad.Reader.Class ( ask, class MonadReader )
-import Data.Argonaut.Generic.Aeson ( decodeJson, encodeJson )
-import Data.Argonaut.Printer ( printJson )
-import Data.Maybe ( Maybe(..) )
-import Data.Nullable ( Nullable(), toNullable )
-import GenerateClient.Types ( EmailProperties )
-import Global ( encodeURIComponent )
-import Network.HTTP.Affjax ( AJAX )
-import Prim ( String )
-import Servant.PureScript.Affjax ( AjaxError(..), affjax, defaultRequest )
-import Servant.PureScript.Settings ( SPSettings_(..), gDefaultToURLPiece )
-import Servant.PureScript.Util ( encodeHeader,
-                                 encodeListQuery,
-                                 encodeQueryItem,
-                                 encodeURLPiece,
-                                 getResult     )
+import Control.Monad.Aff.Class (class MonadAff)
+import Control.Monad.Error.Class (class MonadError)
+import Control.Monad.Reader.Class (ask, class MonadReader)
+import Data.Argonaut.Generic.Aeson (decodeJson)
+import GenerateClient.Types (EmailProperties)
+import Network.HTTP.Affjax (AJAX)
+import Prim (String)
+import Servant.PureScript.Affjax (AjaxError, affjax, defaultRequest)
+import Servant.PureScript.Settings (SPSettings_(SPSettings_))
+import Servant.PureScript.Util (encodeQueryItem, encodeURLPiece, getResult)
 
 
 newtype SPParams_ = SPParams_ { baseURL :: String }

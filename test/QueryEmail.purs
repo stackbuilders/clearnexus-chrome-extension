@@ -1,96 +1,56 @@
-module Test.QueryEmail ( testFilteringOfInputElements
-                       , testQueryForInputTag
-                       , testQueryForNameAttr        ) where
+module Test.QueryEmail ( testQueryForDivTags
+                       , testEmailExtraction ) where
 
 
+import Prelude ((==), bind, ($), Unit)
 import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.Aff ( Aff )
-import DOM.QueryEmail ( readEmails_, HtmlElt )
-import DOM ( DOM )
-import Data.Array ( length )
-import Data.Identity ( Identity )
-import Prelude ( bind, ($), Unit )
-import Test.Spec ( it, Group )
-import Control.Monad.State.Trans ( StateT )
-import Test.Spec.Assertions (shouldEqual, shouldNotEqual)
+import Control.Monad.Aff (Aff)
+import DOM.QueryDocument (readEmails, DocElt)
+import DOM  (DOM)
+import Data.Array (length)
+import Data.Identity (Identity)
+import Test.Spec (it, Group)
+import Control.Monad.State.Trans (StateT)
+import Test.Spec.Assertions (shouldEqual)
+import Data.Maybe (Maybe(..))
 
 
 type QueryEmailTest = forall eff .
-                        StateT ( Array ( Group ( Aff ( dom ∷ DOM | eff ) Unit ) ) ) Identity Unit
+                      StateT (Array (Group (Aff (dom ∷ DOM | eff) Unit))) Identity Unit
 
 
---- <<  Mock to test the correct searching of <input> tags
-inputTags :: HtmlElt
-inputTags = { getElementsByTagName: \str ->
-               case str of
-                 "input" -> [ { value: "Omar Castro <ocastro@gmail.com>",
-                                getAttribute: \_ -> "to" },
-                              { value: "Gabriela Palacios <gpalacios@gmail.com>",
-                                getAttribute: \_ -> "to" },
-                              { value: "Cristina Galindo <cgalindo@gmail.com>",
-                                getAttribute: \_ -> "to" },
-                              { value: "Some Value",
-                                getAttribute: \_ -> "something" },
-                              { value: "Some Other Value",
-                                getAttribute: \_ ->  "something else" } ]
-                 _ -> [] }
+--- <<  Mock to test the correct searching of <div> tags with class vR
+divTags :: DocElt
+divTags = { getElementsByClassName: \class_ ->
+               case class_ of
+                 "vR" -> [ { firstChild: { getAttribute: \attr -> "omaturana@gmail.com" } }
+                         , { firstChild: { getAttribute: \attr -> "gpalacios@gmail.com" } } ]
+                 _ -> []
+          }
 
 
---- << Mock to test the correct filtering by "name" attibute in <input> tags
-nameAttrs :: HtmlElt
-nameAttrs = { getElementsByTagName: \_ ->
-               [ { value: "Omar Castro <ocastro@gmail.com>",
-                   getAttribute: \str -> case str of
-                     "name" -> "to"
-                     _ -> "Another Value" } ] }
+--- <<  Mock to test extraction of email attribute from first child of <div class="vR"> tags
+emailAttrs :: DocElt
+emailAttrs = { getElementsByClassName: \_ -> [ { firstChild: { getAttribute: \attr ->
+                                                                if attr == "email"
+                                                                  then "omaturana@gmail.com"
+                                                                  else "NO-EMAIL" } }
+                                             , { firstChild: { getAttribute: \attr ->
+                                                                if attr == "email"
+                                                                  then "gpalacios@gmail.com"
+                                                                  else "NO-EMAIL" } } ]
+             }
 
 
---- <<  Mocks to test the correct filtering depending on the value of the "name" attribute
-threeEmails :: HtmlElt
-threeEmails = { getElementsByTagName: \_ ->
-                 [ { value: "Omar Maturana <omaturana@gmail.com>",
-                     getAttribute: \_ -> "to" },
-                   { value: "Gabriela Palacios <gpalacios@gmail.com>",
-                     getAttribute: \_ -> "to" },
-                   { value: "Cristina Galindo <cgalindo@gmail.com>",
-                     getAttribute: \_ -> "to" },
-                   { value: "Some Value",
-                     getAttribute: \_ -> "something" },
-                   { value: "Some Other Value",
-                     getAttribute: \_ ->  "something else" } ] }
+testQueryForDivTags :: QueryEmailTest
+testQueryForDivTags =
+  it "passes *vR* class name to the JS function which filters divs by class-name" do
+    values <- liftEff $ readEmails $ Just divTags
+    length values `shouldEqual` 2
 
 
-noEmails :: HtmlElt
-noEmails = { getElementsByTagName: \_ ->
-              [ { value: "Some Value",
-                  getAttribute: \_ -> "something" },
-                { value: "Some Other Value",
-                  getAttribute: \_ ->  "something else" },
-                { value: "Some Value",
-                  getAttribute: \_ -> "something" },
-                { value: "Some Other Value",
-                  getAttribute: \_ ->  "something else" } ] }
---- >>
-
-
-testQueryForInputTag :: QueryEmailTest
-testQueryForInputTag =
-  it "passes *input* string to the JS function which queries <input> tags" do
-    values <- liftEff $ readEmails_ inputTags
-    values `shouldNotEqual` []
-
-
-testQueryForNameAttr :: QueryEmailTest
-testQueryForNameAttr =
-  it "passes *name* string to the JS function which filters inputs by attribute's value" do
-    values <- liftEff $ readEmails_ nameAttrs
-    values `shouldNotEqual` []
-
-
-testFilteringOfInputElements :: QueryEmailTest
-testFilteringOfInputElements =
-  it "filters out the <input> elements whose *name* attribute does not have value *to*" do
-    values <- liftEff $ readEmails_ threeEmails
-    noValues <-liftEff $ readEmails_ noEmails
-    length values `shouldEqual` 3
-    noValues `shouldEqual` []
+testEmailExtraction :: QueryEmailTest
+testEmailExtraction =
+  it "passes *email* attribute name to the JS function which extracts emails from divs' first child" do
+    values <- liftEff $ readEmails $ Just emailAttrs
+    values `shouldEqual` ["omaturana@gmail.com", "gpalacios@gmail.com"]
