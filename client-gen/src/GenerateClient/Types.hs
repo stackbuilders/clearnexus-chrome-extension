@@ -1,4 +1,5 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 
 module GenerateClient.Types ( EmailProperties
                             , Token
@@ -6,36 +7,33 @@ module GenerateClient.Types ( EmailProperties
                             , LinkData
                             , ClickEventData   ) where
 
+
 import Data.Text (Text)
-import GHC.Generics (Generic)
-import Data.Time (UTCTime)
-import Net.Types (IPv4)
+import GHC.Generics
 
 
-data EmailProperties = EmailProperties
-  { subscribed :: !Bool }
+data EmailProperties = EmailProperties  { subscribed :: !Bool }
     deriving (Generic)
 
 newtype Token = Token { unToken :: Text }
     deriving (Generic)
 
-newtype UriEmail = UriEmail
-  { unUriEmail :: Text }
+newtype UriEmail = UriEmail { unUriEmail :: Text }
     deriving (Generic)
 
 data ClickEventData = ClickEventData
-  { cedSubscribed :: !Bool
-  , cedTime       :: !UTCTime
-  , cedIp         :: !(Maybe IPv4)
-  , cedUserAgent  :: !(Maybe Text)
+  { subscribed :: !Bool
+  , time       :: !Text
+  , ip         :: !(Maybe Int)
+  , user_agent  :: !(Maybe Text)
   } deriving (Generic)
 
 data LinkData = LinkData
-  { ldEmail        :: !Text
-  , ldOrganization :: !Text
-  , ldToken        :: !Token
-  , ldUnsubsciptionLink :: !Text
-  , ldSubscriptionLink  :: !Text
-  , ldCreatedAt    :: !UTCTime
-  , ldClickEvents  :: ![ClickEventData]
+  { email        :: !Text
+  , organization :: !Text
+  , token        :: !Text
+  , unsubscription_link :: !Text
+  , subscription_link  :: !Text
+  , created_at    :: !Text
+  , click_events  :: ![ClickEventData]
   } deriving (Generic)

@@ -21,8 +21,7 @@
     "purescript-profunctor-lenses": "^2.6.0",
     "purescript-dom": "^3.5.1",
     "purescript-either": "^2.1.0",
-    "purescript-eff-functions": "^2.0.0",
-    "purescript-datetime": "^2.2.0"
+    "purescript-eff-functions": "^2.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^2.0.0",

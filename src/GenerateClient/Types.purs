@@ -3,9 +3,7 @@ module GenerateClient.Types where
 
 import Data.Lens (Lens', Prism', lens, prism')
 import Data.Maybe (Maybe, Maybe(..))
-import Data.Time.Clock.UTC (UTCTime)
-import Net.Types (IPv4)
-import Prim (Array, Boolean, String)
+import Prim (Array, Boolean, Int, String)
 
 import Prelude
 import Data.Generic (class Generic)
@@ -57,16 +55,16 @@ _UriEmail = prism' UriEmail f
 --------------------------------------------------------------------------------
 newtype ClickEventData =
     ClickEventData {
-      cedSubscribed :: Boolean
-    , cedTime :: UTCTime
-    , cedIp :: Maybe IPv4
-    , cedUserAgent :: Maybe String
+      subscribed :: Boolean
+    , time :: String
+    , ip :: Maybe Int
+    , user_agent :: Maybe String
     }
 
 derive instance genericClickEventData :: Generic ClickEventData
 
 --------------------------------------------------------------------------------
-_ClickEventData :: Prism' ClickEventData { cedSubscribed :: Boolean, cedTime :: UTCTime, cedIp :: Maybe IPv4, cedUserAgent :: Maybe String}
+_ClickEventData :: Prism' ClickEventData { subscribed :: Boolean, time :: String, ip :: Maybe Int, user_agent :: Maybe String}
 _ClickEventData = prism' ClickEventData f
   where
     f (ClickEventData r) = Just r
@@ -75,19 +73,19 @@ _ClickEventData = prism' ClickEventData f
 --------------------------------------------------------------------------------
 newtype LinkData =
     LinkData {
-      ldEmail :: String
-    , ldOrganization :: String
-    , ldToken :: Token
-    , ldUnsubsciptionLink :: String
-    , ldSubscriptionLink :: String
-    , ldCreatedAt :: UTCTime
-    , ldClickEvents :: Array ClickEventData
+      email :: String
+    , organization :: String
+    , token :: String
+    , unsubscription_link :: String
+    , subscription_link :: String
+    , created_at :: String
+    , click_events :: Array ClickEventData
     }
 
 derive instance genericLinkData :: Generic LinkData
 
 --------------------------------------------------------------------------------
-_LinkData :: Prism' LinkData { ldEmail :: String, ldOrganization :: String, ldToken :: Token, ldUnsubsciptionLink :: String, ldSubscriptionLink :: String, ldCreatedAt :: UTCTime, ldClickEvents :: Array ClickEventData}
+_LinkData :: Prism' LinkData { email :: String, organization :: String, token :: String, unsubscription_link :: String, subscription_link :: String, created_at :: String, click_events :: Array ClickEventData}
 _LinkData = prism' LinkData f
   where
     f (LinkData r) = Just r

@@ -6,12 +6,11 @@ module GenerateClient.Bridge ( myApiProxy
                              , myTypes     ) where
 
 
-import Control.Lens.Getter ( view )
-import Data.Proxy ( Proxy(..) )
+import Control.Lens.Getter (view)
+import Data.Proxy (Proxy(..))
 import GenerateClient.Types
 import GenerateClient.API
-import Servant.PureScript ( defaultBridge
-                          , HasBridge(..) )
+import Servant.PureScript (defaultBridge, HasBridge(..))
 import Language.PureScript.Bridge ( buildBridge
                                   , BridgePart
                                   , FullBridge
@@ -21,21 +20,21 @@ import Language.PureScript.Bridge ( buildBridge
                                   , (<|>)
                                   , psTypeParameters
                                   , typeModule
-                                  , haskType
-                                  )
+                                  , haskType       )
+
+
+data MyBridge
+
+instance HasBridge MyBridge where
+  languageBridge _ = buildBridge myBridgePart
 
 
 fixTypesModule :: BridgePart
 fixTypesModule = do
   typeModule ^== "ClearNexus.Client"
   t <- view haskType
-  TypeInfo ( _typePackage t ) "ClearNexus.Client.Types" ( _typeName t )
+  TypeInfo (_typePackage t) "ClearNexus.Client.Types" (_typeName t)
     <$> psTypeParameters
-
-data MyBridge
-
-instance HasBridge MyBridge where
-  languageBridge _ = buildBridge myBridgePart
 
 myBridge :: FullBridge
 myBridge = buildBridge myBridgePart

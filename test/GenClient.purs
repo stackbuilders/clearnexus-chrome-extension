@@ -1,21 +1,20 @@
-module Test.GenClient (  testClientNeverSubscribedEmail
-                       , testClientSubscribedEmail
+module Test.GenClient (  testClientSubscribedEmail
                        , testClientUnsubscribedEmail
                        , testClientResubscribedEmail
                        , testApiCallWithInvalidToken
-                       , blabla                       ) where
+                       , testApiCallWithNonExistentEmail
+                       , testPostNewLinkWithUnsuscribedEmail ) where
 
 
 import Prelude (bind, ($), Unit, show)
-import Control.Monad.Aff.Console (logShow)
+import Control.Monad.Aff.Console (CONSOLE, logShow)
 import Control.Monad.Aff (Aff)
 import Control.Monad.State.Trans (StateT)
 import Data.Either (Either(..))
 import Data.Identity (Identity)
-import GenerateClient.Types ( EmailProperties(..)
-                            , LinkData(..)      )
+import GenerateClient.Types (EmailProperties(..), LinkData(..))
 import Network.HTTP.Affjax (AJAX)
-import Test.Spec (Group, it, itOnly)
+import Test.Spec (Group, it)
 import Test.Spec.Assertions (fail, shouldEqual)
 import Util  (getSubscriptionStatus, postNewLink)
 import Servant.PureScript.Affjax ( AjaxError(..)
@@ -24,7 +23,7 @@ import Servant.PureScript.Affjax ( AjaxError(..)
 
 
 type GenClientTest = forall eff .
-                     String -> StateT (Array (Group (Aff ( ajax ∷ AJAX | eff ) Unit))) Identity Unit
+                     String -> StateT (Array (Group (Aff ( console :: CONSOLE, ajax ∷ AJAX | eff ) Unit))) Identity Unit
 
 
 clearNexusStaging :: String
@@ -44,7 +43,7 @@ resubscribedEmail = "resubscribed@clearnex.us"
 
 
 -- << Helper Functions
-resToString :: Either AjaxError EmailProperties -> String
+resToString :: forall a . Either AjaxError a -> String
 resToString (Right _) = "No Error"
 resToString (Left (AjaxError err)) = errorDescToString err.description
   where
@@ -59,15 +58,14 @@ getStatus (EmailProperties obj) = obj.subscribed
 -- >>
 
 
-testClientNeverSubscribedEmail :: GenClientTest
-testClientNeverSubscribedEmail testUserToken =
-  it "returns false for an email that has never subscribed" do
-    isSubscribed <- getSubscriptionStatus clearNexusStaging
-                                          notSubscribedEmail
-                                          testUserToken
-    case isSubscribed of
-      Left err -> fail $ errorToString err
-      Right status -> getStatus status `shouldEqual` false
+-- << Test a call to the API with an email which does not exists
+testApiCallWithNonExistentEmail :: GenClientTest
+testApiCallWithNonExistentEmail userToken =
+  it "returns Status Code 404 when called with an email which is not in the Server's DB" do
+    response <- getSubscriptionStatus clearNexusStaging
+                                      notSubscribedEmail
+                                      userToken
+    resToString response `shouldEqual` "(StatusCode 404)"
 
 
 testClientSubscribedEmail :: GenClientTest
@@ -114,22 +112,21 @@ testApiCallWithInvalidToken =
     resToString response `shouldEqual` "(StatusCode 500)"
 
 
--- <<
-
-
-blabla userToken =
-  itOnly "works" do
+-- << TODO: We need a way to add rollbacks on the server side for testing
+--    in order for this test to be replicable because it always creates a new
+--    link in DB.
+testPostNewLinkWithUnsuscribedEmail :: GenClientTest
+testPostNewLinkWithUnsuscribedEmail userToken =
+  it "returns a LinkData object with the correct link properties" do
     response <- postNewLink clearNexusStaging
-                            subscribedEmail
+                            "spulido@gmail.com"
                             userToken
     case response  of
-      (Left (AjaxError err)) -> logShow $ errorDescToString err.description
       (Right (LinkData linkData)) -> do
-        logShow linkData.ldEmail
-        1 `shouldEqual` 1
-  where
-    errorDescToString :: ErrorDescription -> String
-    errorDescToString (ConnectionError desc) = desc
-    errorDescToString (DecodingError desc) = desc
-    errorDescToString (ParsingError desc) = desc
-    errorDescToString (UnexpectedHTTPStatus obj) = show $ obj.status
+        linkData.email `shouldEqual` ""
+        linkData.organization `shouldEqual` ""
+        linkData.token `shouldEqual` ""
+        linkData.unsubscription_link `shouldEqual` ""
+        linkData.subscription_link `shouldEqual` ""
+        linkData.created_at `shouldEqual` ""
+      err -> logShow $ resToString err
