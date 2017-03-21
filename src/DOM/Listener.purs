@@ -30,10 +30,6 @@ foreign import getStoredToken :: forall eff r .
                                         Unit
 
 
-clearnexusUrl :: String
-clearnexusUrl = "https://staging.clearnex.us/"
-
-
 reqCallback :: forall eff r .
                String
             -> String
@@ -59,18 +55,19 @@ reqCallback serverUrl email items = do
 
 -- << Listener for events in the <textarea name="to"> element
 textAreaListener :: forall eff .
-                    Event
+                    String
+                 -> Event
                  -> Eff ( dom :: DOM
                         , console :: CONSOLE
                         , alert :: ALERT
                         , timer :: TIMER
                         , ajax :: AJAX | eff ) Unit
-textAreaListener event = do
+textAreaListener clearnexusUrl event = do
   maybeElt <- queryDocElt "div[class=vR]"
   case maybeElt of
     Nothing -> do
       -- Poll events every second not to block the browser
-      setTimeout 1000 (textAreaListener event)
+      setTimeout 1000 (textAreaListener clearnexusUrl event)
       pure unit
     Just textArea ->
       addEventListener (EventType "dblclick")

@@ -21,6 +21,8 @@
 
   "permissions": ["activeTab",
                   "tabs",
-		  "storage",
-		  "*://staging.clearnex.us/*"]
+                  "storage",
+                  "*://localhost:8000/*",
+                  "*://staging.clearnex.us/*",
+                  "*://clearnex.us/*"]
 }

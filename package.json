@@ -9,7 +9,10 @@
   "scripts": {
     "bower": "bower",
     "pulp": "pulp",
-    "test": "pulp test"
+    "test": "pulp test",
+    "build:dev": "export NODE_ENV=Dev && node ./app/main.js && pulp build",
+    "build:stag" : "export NODE_ENV=Staging && node ./app/main.js && pulp build",
+    "build:prod" : "export NODE_ENV=Prod && node ./app/main.js && pulp build"
   },
   "author": "Stackbuilders, Inc",
   "license": "ISC",

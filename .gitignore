@@ -6,3 +6,5 @@
 /.psc*
 /.psa*
 /extension/clearnexus.js
+
+./src/Config.purs
