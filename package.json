@@ -10,9 +10,9 @@
     "bower": "bower",
     "pulp": "pulp",
     "test": "pulp test",
-    "build:dev": "export PURS_ENV=Dev && node ./app/main.js && pulp build",
-    "build:stag" : "export PURS_ENV=Staging && node ./app/main.js && pulp build",
-    "build:prod" : "export PURS_ENV=Prod && node ./app/main.js && pulp build"
+    "build:dev": "export NODE_ENV=Dev && node ./app/main.js && pulp build",
+    "build:stag" : "export NODE_ENV=Staging && node ./app/main.js && pulp build",
+    "build:prod" : "export NODE_ENV=Prod && node ./app/main.js && pulp build"
   },
   "author": "Stackbuilders, Inc",
   "license": "ISC",
