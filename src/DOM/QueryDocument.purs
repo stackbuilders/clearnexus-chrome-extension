@@ -1,7 +1,7 @@
 module DOM.QueryDocument ( readEmails
                          , queryDocElt
                          , delayExtInjection
-                         , DocElt      ) where
+                         , DocumentElement ) where
 
 
 import Prelude
@@ -24,16 +24,16 @@ import Data.Nullable (toMaybe)
 import Data.Traversable (traverse)
 
 
-type DocElt = { getElementsByClassName ::
-                   String -> Array { firstChild :: { getAttribute :: String -> String } }
-              }
+type DocumentElement = { getElementsByClassName ::
+                            String -> Array { firstChild :: { getAttribute :: String -> String } }
+                       }
 
 
-foreign import queryEmails :: forall eff . Null DocElt -> Eff (dom :: DOM | eff) Foreign
+foreign import queryEmails :: forall eff . Null DocumentElement -> Eff (dom :: DOM | eff) Foreign
 
 
--- << When used in browser Do Not provide DocElt (Nothing). In tests, inject Just DocElt
-readEmails :: forall eff .  Maybe DocElt -> Eff (dom :: DOM | eff) (Array String)
+-- << When used in browser Do Not provide DocumentElement (Nothing). In tests, inject Just DocumentElement
+readEmails :: forall eff .  Maybe DocumentElement -> Eff (dom :: DOM | eff) (Array String)
 readEmails mock = do
   query <- queryEmails (Null mock) -- provide the mock
   values <- pure $ either (const []) id (runExcept $ readArray query)
@@ -51,7 +51,7 @@ queryDocElt selector = do
 
 
 -- << Wrapper to delay the injection of our extension's JavaScript code until a
--- << specific element has been found.
+--    specific element has been found.
 delayExtInjection :: forall eff .
                      String
                   -> EventType

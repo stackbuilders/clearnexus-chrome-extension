@@ -5,7 +5,7 @@ module Test.QueryEmail ( testQueryForDivTags
 import Prelude ((==), bind, ($), Unit)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Aff (Aff)
-import DOM.QueryDocument (readEmails, DocElt)
+import DOM.QueryDocument (readEmails, DocumentElement)
 import DOM  (DOM)
 import Data.Array (length)
 import Data.Identity (Identity)
@@ -20,7 +20,7 @@ type QueryEmailTest = forall eff .
 
 
 --- <<  Mock to test the correct searching of <div> tags with class vR
-divTags :: DocElt
+divTags :: DocumentElement
 divTags = { getElementsByClassName: \class_ ->
                case class_ of
                  "vR" -> [ { firstChild: { getAttribute: \attr -> "omaturana@gmail.com" } }
@@ -30,7 +30,7 @@ divTags = { getElementsByClassName: \class_ ->
 
 
 --- <<  Mock to test extraction of email attribute from first child of <div class="vR"> tags
-emailAttrs :: DocElt
+emailAttrs :: DocumentElement
 emailAttrs = { getElementsByClassName: \_ -> [ { firstChild: { getAttribute: \attr ->
                                                                 if attr == "email"
                                                                   then "omaturana@gmail.com"

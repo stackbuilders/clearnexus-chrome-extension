@@ -17,10 +17,12 @@ import Data.Array (head)
 import Data.Either (Either(..))
 import Data.Function.Eff (EffFn1, mkEffFn1, runEffFn1)
 import Data.Maybe (Maybe(..))
-import GenerateClient.Types (EmailProperties(..))
+import Data.Semigroup ((<>))
+import GenerateClient.Types (EmailProperties(..), LinkData(..))
 import Network.HTTP.Affjax (AJAX)
-import Servant.PureScript.Affjax (AjaxError(..))
-import Util (getSubscriptionStatus)
+import Network.HTTP.StatusCode (StatusCode(..))
+import Servant.PureScript.Affjax (AjaxError(..), ErrorDescription(..), errorToString)
+import Util (getSubscriptionStatus, getLink, postNewLink)
 
 
 -- << Type EffFn1 is necessary due to compilation issues of callbacks with effects
@@ -31,7 +33,7 @@ foreign import getStoredToken :: forall eff r .
 
 
 clearnexusUrl :: String
-clearnexusUrl = "http://localhost:8000/"
+clearnexusUrl = "https://staging.clearnex.us/"
 
 
 reqCallback :: forall eff r .
@@ -44,17 +46,35 @@ reqCallback :: forall eff r .
                    , alert :: ALERT
                    , ajax :: AJAX | eff ) Unit
 reqCallback serverUrl email items = do
-  runAff logShow successCallback (getSubscriptionStatus serverUrl email items.authtoken)
+  runAff logShow subsStatusCallback (getSubscriptionStatus serverUrl email items.authtoken)
   pure unit
   where
-    successCallback (Left (AjaxError obj)) = do
+    subsStatusCallback (Left ajaxErr@(AjaxError err)) =
+      case err.description of
+        UnexpectedHTTPStatus obj ->
+          if obj.status == StatusCode 404
+          then do
+            runAff logShow postLinkCallback (postNewLink serverUrl email items.authtoken)
+            pure unit
+          else logShow $ errorToString ajaxErr
+        _ -> logShow $ errorToString ajaxErr
+    subsStatusCallback (Right (EmailProperties obj)) = do
+      runAff logShow (getLinkCallback obj.subscribed) (getLink serverUrl obj.link_token items.authtoken)
+      pure unit
+    -- << >> --
+    postLinkCallback (Left ajaxErr@(AjaxError err)) = logShow $ errorToString ajaxErr
+    postLinkCallback (Right (LinkData obj)) = do
+      let msg = "Link created for the first time: " <> " " <> obj.unsubscription_link
       win <- window
-      alert "Register a valid ClearNexus token!" win
-    successCallback (Right (EmailProperties obj)) = do
+      alert msg win
+    -- << >> --
+    getLinkCallback _ (Left ajaxErr@(AjaxError err)) = logShow $ errorToString ajaxErr
+    getLinkCallback isSubscribed (Right (LinkData obj)) = do
+      let msg = if isSubscribed
+                then "User is subscribed: " <> " " <> obj.unsubscription_link
+                else "User is NOT subscribed: " <> " " <> obj.unsubscription_link
       win <- window
-      if obj.subscribed
-        then alert "This user is subscribed!" win
-        else alert "This user is NOT subscribed..." win
+      alert msg win
 
 
 -- << Listener for events in the <textarea name="to"> element

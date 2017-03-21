@@ -11,9 +11,9 @@ import Data.Maybe (Maybe(..))
 import Data.Tuple
 import Network.HTTP.Affjax (AJAX)
 import Node.Process (PROCESS, lookupEnv, exit)
-import Prelude (Unit, bind)
+import Prelude (Unit, bind, ($))
 import Test.QueryEmail (testQueryForDivTags, testEmailExtraction)
-import Test.Spec (describe, pending)
+import Test.Spec (describe)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (run)
 import Test.Storage (testQueryForToken)
@@ -55,12 +55,14 @@ main =  do
           testGetEmailPropsWithNonExistentEmail userToken
           testGetEmailPropsWithInvalidToken
       describe "Get link data endpoint" do
-        describe "" do
+        describe "getLink" do
           testGetLinkWithInvalidUserToken linkToken
           testGetLinkWithInvalidLinkToken userToken
           testGetLinkWithValidTokens linkToken userToken
-      describe "Post new link endpoint" do
-        pending "postNewlink"
+   -- Enable this test when implementing RollBack in the Server
+   -- describe "Post new link endpoint" do
+   --   describe "postNewLink" do
+   --     testPostNewLinkWithUnsuscribedEmail userToken
       describe "DOM Module" do
         describe "Querying Gmail's document elements" do
           testQueryForDivTags

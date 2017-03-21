@@ -18,7 +18,9 @@ import Data.Semigroup ((<>))
 import GenerateClient.Types (EmailProperties(..), LinkData(..))
 import Network.HTTP.Affjax (AJAX)
 import Prelude (bind, ($), Unit, show)
-import Servant.PureScript.Affjax (AjaxError(..), ErrorDescription(..), errorToString)
+import Servant.PureScript.Affjax ( AjaxError(..)
+                                 , ErrorDescription(..)
+                                 , errorToString      )
 import Test.Spec (Group, it)
 import Test.Spec.Assertions (fail, shouldEqual)
 import Test.Spec.Assertions.String (shouldContain)
@@ -29,7 +31,7 @@ type GenClientTest eff = forall eff . StateT (Array (Group (Aff ( console :: CON
 
 
 clearNexusStaging :: String
-clearNexusStaging = "http://localhost:8000/"
+clearNexusStaging = "https://staging.clearnex.us/"
 
 notSubscribedEmail :: String
 notSubscribedEmail = "notsubscribed@clearnex.us"
@@ -47,10 +49,10 @@ invalidToken :: String
 invalidToken = "INVALID-TOKEN"
 
 
--- << Helper Functions
-resToString :: forall a . Either AjaxError a -> String
-resToString (Right _) = "There was no Error"
-resToString (Left (AjaxError err)) = errorDescToString err.description
+-- << Helpers
+getStatusCodeFromErrDesc :: forall a . Either AjaxError a -> String
+getStatusCodeFromErrDesc (Right _) = "There was no Error"
+getStatusCodeFromErrDesc (Left (AjaxError err)) = errorDescToString err.description
   where
     errorDescToString :: ErrorDescription -> String
     errorDescToString (ConnectionError desc) = desc
@@ -69,7 +71,7 @@ testGetEmailPropsWithNonExistentEmail userToken =
     response <- getSubscriptionStatus clearNexusStaging
                                       notSubscribedEmail
                                       userToken
-    resToString response `shouldEqual` "(StatusCode 404)"
+    getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 404)"
 
 
 testGetEmailPropsWithSubscribedEmail :: forall eff . String -> GenClientTest eff
@@ -109,21 +111,21 @@ testGetEmailPropsWithInvalidToken :: forall eff . GenClientTest eff
 testGetEmailPropsWithInvalidToken =
   it "returns Status Code 500 when called with Invalid Token" do
     response <- getSubscriptionStatus clearNexusStaging resubscribedEmail invalidToken
-    resToString response `shouldEqual` "(StatusCode 500)"
+    getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 500)"
 
 
 testGetLinkWithInvalidUserToken :: forall eff . String -> GenClientTest eff
 testGetLinkWithInvalidUserToken linkToken =
   it "returns Status Code 500 when called with Invalid User Token" do
     response <- getLink clearNexusStaging linkToken invalidToken
-    resToString response `shouldEqual` "(StatusCode 500)"
+    getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 500)"
 
 
 testGetLinkWithInvalidLinkToken :: forall eff . String -> GenClientTest eff
 testGetLinkWithInvalidLinkToken userToken =
   it "returns Status Code 500 when called with Invalid User Token" do
     response <- getLink clearNexusStaging invalidToken userToken
-    resToString response `shouldEqual` "(StatusCode 500)"
+    getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 500)"
 
 
 testGetLinkWithValidTokens :: forall eff . String -> String -> GenClientTest eff
@@ -137,12 +139,12 @@ testGetLinkWithValidTokens linkToken userToken =
         linkData.token `shouldEqual` linkToken
         linkData.unsubscription_link `shouldContain` ("links/" <> linkToken <> "/unsubscribe")
         linkData.subscription_link `shouldContain` ("links/" <> linkToken <> "/subscribe")
-      err -> logShow $ resToString err
+      err -> logShow $ getStatusCodeFromErrDesc err
 
 
 -- << TODO: We need a way to add rollbacks on the server side for testing
 --    in order for this test to be replicable because it always creates a new
---    link in DB.
+--    link in DB. After that, match this test with the appropriate values.
 testPostNewLinkWithUnsuscribedEmail :: forall eff . String -> GenClientTest eff
 testPostNewLinkWithUnsuscribedEmail userToken =
   it "returns a LinkData object with the correct link properties" do
@@ -157,4 +159,4 @@ testPostNewLinkWithUnsuscribedEmail userToken =
         linkData.unsubscription_link `shouldEqual` ""
         linkData.subscription_link `shouldEqual` ""
         linkData.created_at `shouldEqual` ""
-      err -> logShow $ resToString err
+      err -> logShow $ getStatusCodeFromErrDesc err

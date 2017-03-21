@@ -9,6 +9,7 @@ module GenerateClient.Types ( EmailProperties
 import Data.Text (Text)
 import GHC.Generics
 
+
 data EmailProperties = EmailProperties
   { subscribed :: !Bool
   , link_token:: !Text

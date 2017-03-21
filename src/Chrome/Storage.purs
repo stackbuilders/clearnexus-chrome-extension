@@ -1,6 +1,6 @@
 module Chrome.Storage ( saveToken
                       , addListenerToSaveBtn
-                      , OptDoc
+                      , PopUpDocument
                       , Chrome   ) where
 
 
@@ -19,9 +19,9 @@ import Data.Maybe (Maybe(..))
 import DOM.QueryDocument (queryDocElt)
 
 
-type OptDoc = { getElementById ::
-                   String -> { value :: String }
-              }
+type PopUpDocument = { getElementById ::
+                          String -> { value :: String }
+                     }
 
 type Chrome = { storage ::
                    { sync ::
@@ -30,11 +30,11 @@ type Chrome = { storage ::
               }
 
 
-foreign import uncurriedSaveToken :: forall eff . Fn2 (Null OptDoc) (Null Chrome) (Eff (alert :: ALERT | eff) Foreign)
+foreign import uncurriedSaveToken :: forall eff . Fn2 (Null PopUpDocument) (Null Chrome) (Eff (alert :: ALERT | eff) Foreign)
 
 
 saveToken :: forall eff .
-             Maybe OptDoc
+             Maybe PopUpDocument
           -> Maybe Chrome
           -> Eff (dom :: DOM, alert :: ALERT  | eff) (Maybe String)
 saveToken optDoc chrome = do
