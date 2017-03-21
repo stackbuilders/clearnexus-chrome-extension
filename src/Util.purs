@@ -1,5 +1,6 @@
 module Util ( getSubscriptionStatus
             , postNewLink
+            , getLink
             , EPInstances(..)     ) where
 
 
@@ -20,6 +21,7 @@ import Servant.PureScript.Affjax (AjaxError)
 import Servant.PureScript.Settings (SPSettings_, defaultSettings)
 import ServerAPI ( SPParams_(..)
                  , getApiEmailByEmail
+                 , getApiLinkByToken
                  , postApiLinks     )
 
 
@@ -54,6 +56,15 @@ getSubscriptionStatus url email token =
     (getApiEmailByEmail email token)
        (makeSettings { baseURL: url })
 
+getLink :: forall eff .
+           String
+        -> String
+        -> String
+        -> Aff (ajax :: AJAX | eff) (Either AjaxError LinkData)
+getLink url linkToken accessToken =
+  (runReaderT <<< runExceptT)
+    (getApiLinkByToken linkToken accessToken)
+       (makeSettings { baseURL: url })
 
 postNewLink :: forall eff .
                String

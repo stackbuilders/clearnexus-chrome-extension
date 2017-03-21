@@ -11,6 +11,13 @@ import Servant
 
 newtype CreateLinkData = CreateLinkData { cldTargetEmail :: Text }
 
+type GetLinkR =
+  QueryParam "access_token" Text :>
+  "api" :>
+  "link" :>
+  Capture "token" Text :>
+  Get '[JSON] LinkData
+
 type GetEmailPropertiesR =
   QueryParam "access_token" Text :>
   "api" :>
@@ -25,4 +32,4 @@ type PostLinksR =
   ReqBody '[JSON] CreateLinkData :>
   Post '[JSON] LinkData
 
-type API = GetEmailPropertiesR :<|> PostLinksR
+type API = GetEmailPropertiesR :<|> PostLinksR :<|> GetLinkR

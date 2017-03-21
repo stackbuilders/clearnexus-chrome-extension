@@ -66,3 +66,25 @@ postApiLinks reqBody access_token = do
   affResp <- affjax affReq
   getResult affReq decodeJson affResp
   
+getApiLinkByToken :: forall eff m.
+                     (MonadReader (SPSettings_ SPParams_) m, MonadError AjaxError m, MonadAff ( ajax :: AJAX | eff) m)
+                     => String -> String -> m LinkData
+getApiLinkByToken token access_token = do
+  spOpts_' <- ask
+  let spOpts_ = case spOpts_' of SPSettings_ o -> o
+  let spParams_ = case spOpts_.params of SPParams_ ps_ -> ps_
+  let baseURL = spParams_.baseURL
+  let httpMethod = "GET"
+  let reqUrl = baseURL <> "api" <> "/" <> "link"
+        <> "/" <> encodeURLPiece spOpts_' token 
+        <> "?" <> encodeQueryItem spOpts_' "access_token" access_token
+  let reqHeaders =
+        []
+  let affReq = defaultRequest
+                 { method = httpMethod
+                 , url = reqUrl
+                 , headers = defaultRequest.headers <> reqHeaders
+                 }
+  affResp <- affjax affReq
+  getResult affReq decodeJson affResp
+  

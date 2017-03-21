@@ -11,45 +11,16 @@ import Data.Generic (class Generic)
 newtype EmailProperties =
     EmailProperties {
       subscribed :: Boolean
+    , link_token :: String
     }
 
 derive instance genericEmailProperties :: Generic EmailProperties
 
 --------------------------------------------------------------------------------
-_EmailProperties :: Prism' EmailProperties { subscribed :: Boolean}
+_EmailProperties :: Prism' EmailProperties { subscribed :: Boolean, link_token :: String}
 _EmailProperties = prism' EmailProperties f
   where
     f (EmailProperties r) = Just r
-
-
---------------------------------------------------------------------------------
-newtype Token =
-    Token {
-      unToken :: String
-    }
-
-derive instance genericToken :: Generic Token
-
---------------------------------------------------------------------------------
-_Token :: Prism' Token { unToken :: String}
-_Token = prism' Token f
-  where
-    f (Token r) = Just r
-
-
---------------------------------------------------------------------------------
-newtype UriEmail =
-    UriEmail {
-      unUriEmail :: String
-    }
-
-derive instance genericUriEmail :: Generic UriEmail
-
---------------------------------------------------------------------------------
-_UriEmail :: Prism' UriEmail { unUriEmail :: String}
-_UriEmail = prism' UriEmail f
-  where
-    f (UriEmail r) = Just r
 
 
 --------------------------------------------------------------------------------

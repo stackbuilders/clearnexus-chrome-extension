@@ -2,8 +2,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 
 module GenerateClient.Types ( EmailProperties
-                            , Token
-                            , UriEmail
                             , LinkData
                             , ClickEventData   ) where
 
@@ -11,14 +9,10 @@ module GenerateClient.Types ( EmailProperties
 import Data.Text (Text)
 import GHC.Generics
 
-
-data EmailProperties = EmailProperties  { subscribed :: !Bool }
-    deriving (Generic)
-
-newtype Token = Token { unToken :: Text }
-    deriving (Generic)
-
-newtype UriEmail = UriEmail { unUriEmail :: Text }
+data EmailProperties = EmailProperties
+  { subscribed :: !Bool
+  , link_token:: !Text
+  }
     deriving (Generic)
 
 data ClickEventData = ClickEventData
