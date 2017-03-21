@@ -2,6 +2,7 @@ module Main where
 
 
 import Prelude
+import Config (config)
 import Chrome.Storage (addListenerToSaveBtn)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
@@ -21,4 +22,4 @@ main :: forall eff . Eff (  alert :: ALERT
                          ,  dom :: DOM | eff  ) Unit
 main = do
   addListenerToSaveBtn
-  delayExtInjection "div[gh=cm]" (EventType "click") textAreaListener
+  delayExtInjection "div[gh=cm]" (EventType "click") (textAreaListener config.clearNexusURL)
