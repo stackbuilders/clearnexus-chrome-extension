@@ -22,6 +22,5 @@
   "permissions": ["activeTab",
                   "tabs",
 		  "storage",
-		  "*://staging.clearnex.us/*",
-		  "*://5a1e118c.ngrok.io/*"]
+		  "*://staging.clearnex.us/*"]
 }

@@ -7,9 +7,8 @@ module GenerateClient.API (API) where
 import Data.Text (Text)
 import GenerateClient.Types
 import Servant
+import GenerateClient.Types (CreateLinkData)
 
-
-newtype CreateLinkData = CreateLinkData { cldTargetEmail :: Text }
 
 type GetLinkR =
   QueryParam "access_token" Text :>

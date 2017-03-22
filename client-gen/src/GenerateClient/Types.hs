@@ -3,12 +3,18 @@
 
 module GenerateClient.Types ( EmailProperties
                             , LinkData
-                            , ClickEventData   ) where
+                            , ClickEventData
+                            , CreateLinkData  ) where
 
 
 import Data.Text (Text)
 import GHC.Generics
 
+
+newtype CreateLinkData = CreateLinkData
+  { target_email :: Text
+  }
+  deriving (Generic)
 
 data EmailProperties = EmailProperties
   { subscribed :: !Bool

@@ -22,7 +22,7 @@ data Config = Config {
 
 development :: Config
 development = Config {
-  url: "https://5a1e118c.ngrok.io/"
+  url: "https://staging.clearnex.us/"
   }
 
 staging :: Config
@@ -48,7 +48,7 @@ foreign import loadEnvironment :: forall e r . Aff (dom :: DOM | e) { environmen
 foreign import uncurriedSaveEnv :: forall eff . Fn2 (Null EnvSetter) String (Eff (console :: CONSOLE | eff) Unit)
 
 
-loadConfig :: forall e. Aff (dom :: DOM | e) Config
+loadConfig :: forall e . Aff (dom :: DOM | e) Config
 loadConfig = do
   items <- loadEnvironment
   case items.environment of
