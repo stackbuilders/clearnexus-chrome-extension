@@ -2,7 +2,7 @@ module Test.Storage (testQueryForToken) where
 
 
 import Prelude (Unit, bind, ($), (==), unit)
-import Chrome.Storage (OptDoc, Chrome, saveToken)
+import Chrome.Storage (PopUpDocument, Chrome, saveToken)
 import Control.Monad.Aff (Aff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.State.Trans (StateT)
@@ -20,7 +20,7 @@ type QueryTokenTest = forall eff .
 
 
 -- << Mock to test the correct searching in options document by "authtoken" id in <input> tag
-doc :: OptDoc
+doc :: PopUpDocument
 doc = { getElementById: (\str ->  if str == "authtoken_cn"
                                     then { value: "Some-Token" }
                                     else { value: "Invalid-Id" })
