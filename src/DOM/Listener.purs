@@ -23,6 +23,7 @@ import Network.HTTP.Affjax (AJAX)
 import Network.HTTP.StatusCode (StatusCode(..))
 import Servant.PureScript.Affjax (AjaxError(..), ErrorDescription(..), errorToString)
 import Util (getSubscriptionStatus, getLink, postNewLink)
+import Config (Config(..))
 
 
 -- << Type EffFn1 is necessary due to compilation issues of callbacks with effects
@@ -79,18 +80,19 @@ reqCallback serverUrl email items = do
 
 -- << Listener for events in the <textarea name="to"> element
 textAreaListener :: forall eff .
-                    Event
+                    Config
+                 -> Event
                  -> Eff ( dom :: DOM
                         , console :: CONSOLE
                         , alert :: ALERT
                         , timer :: TIMER
                         , ajax :: AJAX | eff ) Unit
-textAreaListener event = do
+textAreaListener (Config c) event = do
   maybeElt <- queryDocElt "div[class=vR]"
   case maybeElt of
     Nothing -> do
       -- Poll events every second not to block the browser
-      setTimeout 1000 (textAreaListener event)
+      setTimeout 1000 (textAreaListener (Config c) event)
       pure unit
     Just textArea ->
       addEventListener (EventType "dblclick")
@@ -108,5 +110,5 @@ textAreaListener event = do
           setTimeout 500 $ emailListener evt
           pure unit
         Just email -> do
-          let callback = mkEffFn1 $ reqCallback clearnexusUrl email
+          let callback = mkEffFn1 $ reqCallback c.url email
           runEffFn1 getStoredToken callback
