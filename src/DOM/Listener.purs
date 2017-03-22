@@ -18,6 +18,7 @@ import Data.Either (Either(..))
 import Data.Function.Eff (EffFn1, mkEffFn1, runEffFn1)
 import Data.Maybe (Maybe(..))
 import Data.Semigroup ((<>))
+import Config (ChromeEff)
 import GenerateClient.Types (EmailProperties(..), LinkData(..))
 import Network.HTTP.Affjax (AJAX)
 import Network.HTTP.StatusCode (StatusCode(..))
@@ -28,8 +29,8 @@ import Config (Config(..))
 
 -- << Type EffFn1 is necessary due to compilation issues of callbacks with effects
 foreign import getStoredToken :: forall eff r .
-                                 EffFn1 (ajax :: AJAX | eff)
-                                        (EffFn1 (ajax :: AJAX | eff) { authtoken :: String | r } Unit)
+                                 EffFn1 (ajax :: AJAX, chrome :: ChromeEff | eff)
+                                        (EffFn1 (ajax :: AJAX, chrome :: ChromeEff | eff) { authtoken :: String | r } Unit)
                                         Unit
 
 
@@ -45,7 +46,8 @@ reqCallback :: forall eff r .
                    , console :: CONSOLE
                    , timer ∷ TIMER
                    , alert :: ALERT
-                   , ajax :: AJAX | eff ) Unit
+                   , ajax :: AJAX
+                   , chrome :: ChromeEff | eff ) Unit
 reqCallback serverUrl email items = do
   runAff logShow subsStatusCallback (getSubscriptionStatus serverUrl email items.authtoken)
   pure unit
@@ -86,13 +88,14 @@ textAreaListener :: forall eff .
                         , console :: CONSOLE
                         , alert :: ALERT
                         , timer :: TIMER
-                        , ajax :: AJAX | eff ) Unit
-textAreaListener (Config c) event = do
+                        , ajax :: AJAX
+                        , chrome :: ChromeEff | eff ) Unit
+textAreaListener (Config conf) event = do
   maybeElt <- queryDocElt "div[class=vR]"
   case maybeElt of
     Nothing -> do
       -- Poll events every second not to block the browser
-      setTimeout 1000 (textAreaListener (Config c) event)
+      setTimeout 1000 (textAreaListener (Config conf) event)
       pure unit
     Just textArea ->
       addEventListener (EventType "dblclick")
@@ -110,5 +113,5 @@ textAreaListener (Config c) event = do
           setTimeout 500 $ emailListener evt
           pure unit
         Just email -> do
-          let callback = mkEffFn1 $ reqCallback c.url email
+          let callback = mkEffFn1 $ reqCallback conf.url email
           runEffFn1 getStoredToken callback

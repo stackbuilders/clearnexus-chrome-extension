@@ -12,11 +12,13 @@ import Data.Identity (Identity)
 import Data.Maybe (Maybe(..))
 import Test.Spec (it, Group)
 import Test.Spec.Assertions (shouldEqual)
+import Config (ChromeEff)
 import Data.Function.Uncurried (mkFn2)
 
 
-type QueryTokenTest = forall eff .
-                      StateT (Array (Group (Aff (dom ∷ DOM, alert :: ALERT | eff) Unit))) Identity Unit
+type QueryTokenTest =
+  forall eff .
+  StateT (Array (Group (Aff (chrome :: ChromeEff, dom ∷ DOM, alert :: ALERT | eff) Unit))) Identity Unit
 
 
 -- << Mock to test the correct searching in options document by "authtoken" id in <input> tag

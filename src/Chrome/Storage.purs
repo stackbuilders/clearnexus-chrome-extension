@@ -1,7 +1,7 @@
 module Chrome.Storage ( saveToken
                       , addListenerToSaveBtn
                       , PopUpDocument
-                      , Chrome   ) where
+                      , Chrome      ) where
 
 
 import Prelude
@@ -16,6 +16,7 @@ import Data.Foreign (Foreign, readString)
 import Data.Foreign.Null (Null(..), readNull, unNull)
 import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Maybe (Maybe(..))
+import Config (ChromeEff)
 import DOM.QueryDocument (queryDocElt)
 
 
@@ -30,13 +31,18 @@ type Chrome = { storage ::
               }
 
 
-foreign import uncurriedSaveToken :: forall eff . Fn2 (Null PopUpDocument) (Null Chrome) (Eff (alert :: ALERT | eff) Foreign)
+foreign import uncurriedSaveToken :: forall eff .
+                                     Fn2 (Null PopUpDocument)
+                                         (Null Chrome)
+                                         (Eff (chrome :: ChromeEff, alert :: ALERT | eff) Foreign)
 
 
 saveToken :: forall eff .
              Maybe PopUpDocument
           -> Maybe Chrome
-          -> Eff (dom :: DOM, alert :: ALERT  | eff) (Maybe String)
+          -> Eff ( dom :: DOM
+                 , chrome :: ChromeEff
+                 , alert :: ALERT  | eff) (Maybe String)
 saveToken optDoc chrome = do
   value <- curried (Null optDoc) (Null chrome)
   let eitherDoc = unNull <$> runExcept (readNull readString value)
@@ -46,7 +52,9 @@ saveToken optDoc chrome = do
 
 
 addListenerToSaveBtn :: forall eff .
-                        Eff (dom :: DOM, alert :: ALERT  | eff) Unit
+                        Eff ( dom :: DOM
+                            , chrome :: ChromeEff
+                            , alert :: ALERT  | eff) Unit
 addListenerToSaveBtn = do
   maybeElt <- queryDocElt("[id=save_tkn_cn]")
   case maybeElt of
