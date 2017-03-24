@@ -17,7 +17,7 @@ import DOM.Event.Types (EventType(..))
 import Control.Monad.Aff (runAff)
 import Config ( loadConfig
               , setEnv
-              , ChromeEff  )
+              , CHROME  )
 
 
 -- << CHANGE THIS VARIABLE ACCORDING TO ENVIRONMENT >> --
@@ -31,7 +31,7 @@ main :: forall eff . Eff (  alert :: ALERT
                          ,  console :: CONSOLE
                          ,  ajax :: AJAX
                          ,  dom :: DOM
-                         ,  chrome :: ChromeEff | eff  ) Unit
+                         ,  chrome :: CHROME | eff  ) Unit
 main = do
   setEnv Nothing environment
   (flip $ runAff (\_ -> log "Chrome Storage Error...")) loadConfig $ \config -> do

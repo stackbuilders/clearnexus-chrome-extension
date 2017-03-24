@@ -2,7 +2,7 @@ module DOM.Listener (textAreaListener) where
 
 
 import Prelude
-import Config (Config(..), ChromeEff)
+import Config (Config(..), CHROME)
 import Control.Monad.Aff (runAff)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
@@ -27,46 +27,44 @@ import Servant.PureScript.Affjax (AjaxError(..), ErrorDescription(..), errorToSt
 import Util (getLink, getSubscriptionStatus, postNewLink)
 
 
+type Items r = { authtoken :: String | r }
+
 -- << Type EffFn1 is necessary due to compilation issues of callbacks with effects
 foreign import getStoredToken :: forall eff r .
-                                 EffFn1 (ajax :: AJAX, chrome :: ChromeEff | eff)
-                                        (EffFn1 (ajax :: AJAX, chrome :: ChromeEff | eff) { authtoken :: String | r } Unit)
+                                 EffFn1 (ajax :: AJAX, chrome :: CHROME | eff)
+                                        (EffFn1 (ajax :: AJAX, chrome :: CHROME | eff) (Items r) Unit)
                                         Unit
 
 
 reqCallback :: forall eff r .
                String
             -> String
-            -> { authtoken :: String | r }
+            -> Items r
             -> Eff ( dom :: DOM
                    , console :: CONSOLE
                    , timer ∷ TIMER
                    , alert :: ALERT
                    , ajax :: AJAX
-                   , chrome :: ChromeEff | eff ) Unit
+                   , chrome :: CHROME | eff ) Unit
 reqCallback serverUrl email items = do
   runAff logShow (const $ pure unit) (runExceptT asyncGetEmailProps >>= (runExceptT <<< asyncPostLink))
   pure unit
   where
+    displayAlert msg = liftEff window >>= (liftEff <<< alert msg)
+    -- << >> --
     asyncGetEmailProps = do
       (EmailProperties props) <- ExceptT $ getSubscriptionStatus serverUrl email items.authtoken
       (LinkData lData) <- ExceptT $ getLink serverUrl props.link_token items.authtoken
       let msg = if props.subscribed
-                then "User is subscribed: " <> lData.unsubscription_link
-                else "User is NOT subscribed: " <> lData.unsubscription_link
-      win <- liftEff window
-      liftEff $ alert msg win
+                then "Email is SUBSCRIBED: " <> lData.unsubscription_link
+                else "Email is UNSUBSCRIBED"
+      displayAlert msg
     -- << >> --
     asyncPostLink (Left ajaxErr@(AjaxError err)) =
       case err.description of
-        UnexpectedHTTPStatus obj ->
-          if obj.status == StatusCode 404
-          then do
-            (LinkData lData) <- ExceptT $ postNewLink serverUrl email items.authtoken
-            let msg = "Link created for the first time: " <> lData.unsubscription_link
-            win <- liftEff window
-            liftEff $ alert msg win
-          else liftEff $ logShow $ errorToString ajaxErr
+        UnexpectedHTTPStatus  { status: StatusCode 404 } -> do
+          (LinkData lData) <- ExceptT $ postNewLink serverUrl email items.authtoken
+          displayAlert ("Link created for the first time: " <> lData.unsubscription_link)
         _ -> liftEff $ logShow $ errorToString ajaxErr
     asyncPostLink _ = pure unit
 
@@ -79,7 +77,7 @@ textAreaListener :: forall eff .
                         , alert :: ALERT
                         , timer :: TIMER
                         , ajax :: AJAX
-                        , chrome :: ChromeEff | eff ) Unit
+                        , chrome :: CHROME | eff ) Unit
 textAreaListener (Config conf) event = do
   maybeElt <- queryDocElt "div[class=vR]"
   case maybeElt of

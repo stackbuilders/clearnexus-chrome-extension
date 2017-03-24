@@ -18,7 +18,7 @@ import Data.Semigroup ((<>))
 import GenerateClient.Types (EmailProperties(..), LinkData(..))
 import Network.HTTP.Affjax (AJAX)
 import Prelude (bind, ($), Unit, show)
-import Config (ChromeEff)
+import Config (CHROME)
 import Servant.PureScript.Affjax ( AjaxError(..)
                                  , ErrorDescription(..)
                                  , errorToString      )
@@ -30,7 +30,7 @@ import Util (getSubscriptionStatus, postNewLink, getLink)
 
 type GenClientTest eff =
   forall eff .
-  StateT (Array (Group (Aff ( chrome :: ChromeEff, console :: CONSOLE, ajax ∷ AJAX | eff ) Unit))) Identity Unit
+  StateT (Array (Group (Aff ( chrome :: CHROME, console :: CONSOLE, ajax ∷ AJAX | eff ) Unit))) Identity Unit
 
 
 clearNexusStaging :: String

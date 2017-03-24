@@ -1,7 +1,7 @@
 module Config ( setEnv
               , Config(..)
               , loadConfig
-              , ChromeEff  ) where
+              , CHROME   ) where
 
 
 import Prelude (Unit, bind, pure)
@@ -14,7 +14,7 @@ import Data.Foreign.Null (Null(..))
 import Data.Function.Uncurried (Fn2, runFn2)
 
 
-foreign import data ChromeEff :: !
+foreign import data CHROME :: !
 
 data Config = Config {
   url :: String
