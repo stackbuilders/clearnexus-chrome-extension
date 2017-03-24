@@ -42,6 +42,21 @@ _ClickEventData = prism' ClickEventData f
 
 
 --------------------------------------------------------------------------------
+newtype CreateLinkData =
+    CreateLinkData {
+      target_email :: String
+    }
+
+derive instance genericCreateLinkData :: Generic CreateLinkData
+
+--------------------------------------------------------------------------------
+_CreateLinkData :: Prism' CreateLinkData { target_email :: String}
+_CreateLinkData = prism' CreateLinkData f
+  where
+    f (CreateLinkData r) = Just r
+
+
+--------------------------------------------------------------------------------
 newtype LinkData =
     LinkData {
       email :: String

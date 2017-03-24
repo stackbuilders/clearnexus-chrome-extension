@@ -2,7 +2,7 @@ module Test.Storage (testQueryForToken) where
 
 
 import Prelude (Unit, bind, ($), (==), unit)
-import Chrome.Storage (PopUpDocument, Chrome, saveToken)
+import Chrome.Storage (PopUpDocument, ChromeObj, saveToken)
 import Control.Monad.Aff (Aff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.State.Trans (StateT)
@@ -12,11 +12,13 @@ import Data.Identity (Identity)
 import Data.Maybe (Maybe(..))
 import Test.Spec (it, Group)
 import Test.Spec.Assertions (shouldEqual)
+import Config (CHROME)
 import Data.Function.Uncurried (mkFn2)
 
 
-type QueryTokenTest = forall eff .
-                      StateT (Array (Group (Aff (dom ∷ DOM, alert :: ALERT | eff) Unit))) Identity Unit
+type QueryTokenTest =
+  forall eff .
+  StateT (Array (Group (Aff (chrome :: CHROME, dom ∷ DOM, alert :: ALERT | eff) Unit))) Identity Unit
 
 
 -- << Mock to test the correct searching in options document by "authtoken" id in <input> tag
@@ -28,7 +30,7 @@ doc = { getElementById: (\str ->  if str == "authtoken_cn"
 
 
 -- << Mock of the chrome object provided for extensions
-chrome :: Chrome
+chrome :: ChromeObj
 chrome = { storage: {
               sync: {
                  set: mkFn2 (\ _ _ -> unit)

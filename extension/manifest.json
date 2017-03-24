@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "ClearNexus chrome extension",
-  "description": "ClearNexus chrome extension for Google Chrome",
+  "description": "ClearNexus extension for Google Chrome",
   "version": "1.0",
   "homepage_url": "https://clearnex.us/",
 

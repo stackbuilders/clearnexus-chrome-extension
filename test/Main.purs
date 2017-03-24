@@ -17,6 +17,7 @@ import Test.Spec (describe)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (run)
 import Test.Storage (testQueryForToken)
+import Config (CHROME)
 import Test.GenClient (  testGetEmailPropsWithSubscribedEmail
                        , testGetEmailPropsWithUnsubscribedEmail
                        , testGetEmailPropsWithResubscribedEmail
@@ -34,7 +35,8 @@ main :: forall eff . Eff (  process :: PROCESS
                           , avar :: AVAR
                           , ajax :: AJAX
                           , alert :: ALERT
-                          , dom :: DOM | eff )
+                          , dom :: DOM
+                          , chrome :: CHROME | eff  )
                           Unit
 main =  do
   maybeUserToken <- lookupEnv "CLEARNEXUS_USER_TEST_TOKEN"

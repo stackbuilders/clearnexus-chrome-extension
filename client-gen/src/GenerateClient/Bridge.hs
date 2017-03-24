@@ -10,6 +10,7 @@ import Control.Lens.Getter (view)
 import Data.Proxy (Proxy(..))
 import GenerateClient.Types
 import GenerateClient.API
+import GenerateClient.Types (CreateLinkData)
 import Servant.PureScript (defaultBridge, HasBridge(..))
 import Language.PureScript.Bridge ( buildBridge
                                   , BridgePart
@@ -50,5 +51,6 @@ myApiProxy = Proxy
 
 myTypes = [ mkSumType (Proxy :: Proxy EmailProperties)
           , mkSumType (Proxy :: Proxy ClickEventData)
+          , mkSumType (Proxy :: Proxy CreateLinkData)
           , mkSumType (Proxy :: Proxy LinkData)
           ]
