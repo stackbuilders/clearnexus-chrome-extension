@@ -34,10 +34,6 @@ foreign import getStoredToken :: forall eff r .
                                         Unit
 
 
-clearnexusUrl :: String
-clearnexusUrl = "https://staging.clearnex.us/"
-
-
 reqCallback :: forall eff r .
                String
             -> String

@@ -20,8 +20,11 @@ import Config ( loadConfig
               , ChromeEff  )
 
 
+-- << CHANGE THIS VARIABLE ACCORDING TO ENVIRONMENT >> --
 environment :: String
 environment = "development"
+------------------------- << >> -------------------------
+
 
 main :: forall eff . Eff (  alert :: ALERT
                          ,  timer :: TIMER
