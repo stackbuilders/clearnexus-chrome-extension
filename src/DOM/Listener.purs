@@ -82,8 +82,8 @@ textAreaListener (Config conf) event = do
   maybeElt <- queryDocElt "div[class=vR]"
   case maybeElt of
     Nothing -> do
-      -- Poll events every second not to block the browser
-      setTimeout 1000 (textAreaListener (Config conf) event)
+      -- Poll events every 500 mls not to block the browser
+      setTimeout 500 (textAreaListener (Config conf) event)
       pure unit
     Just textArea ->
       addEventListener (EventType "dblclick")

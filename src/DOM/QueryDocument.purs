@@ -17,6 +17,7 @@ import DOM.HTML.Window (document)
 import DOM.Node.ParentNode (querySelector)
 import DOM.Node.Types (documentToParentNode, elementToEventTarget)
 import Data.Either (either)
+import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Foreign (Foreign, readArray, readString)
 import Data.Foreign.Null (Null(..))
 import Data.Maybe (Maybe(..))
@@ -30,6 +31,11 @@ type DocumentElement = { getElementsByClassName ::
 
 
 foreign import queryEmails :: forall eff . Null DocumentElement -> Eff (dom :: DOM | eff) Foreign
+
+
+foreign import pasteLink :: forall eff . Fn2 (Null DocumentElement)
+                                             String
+                                             (Eff (dom :: DOM | eff) Foreign)
 
 
 -- << When used in browser Do Not provide DocumentElement (Nothing). In tests, inject Just DocumentElement
