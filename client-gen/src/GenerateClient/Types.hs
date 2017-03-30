@@ -25,7 +25,7 @@ data EmailProperties = EmailProperties
 data ClickEventData = ClickEventData
   { subscribed :: !Bool
   , time       :: !Text
-  , ip         :: !(Maybe Int)
+  , ip         :: !(Maybe Text)
   , user_agent  :: !(Maybe Text)
   } deriving (Generic)
 
