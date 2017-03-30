@@ -2,7 +2,7 @@ module DOM.QueryDocument ( readEmails
                          , pasteLink
                          , queryDocElt
                          , delayExtInjection
-                         , DocumentElement ) where
+                         , DocumentElement  ) where
 
 
 import Prelude
@@ -28,6 +28,15 @@ import Data.Traversable (traverse)
 
 type DocumentElement = { getElementsByClassName ::
                             String -> Array { firstChild :: { getAttribute :: String -> String } }
+                       , querySelector :: String -> Maybe {
+                              firstChild :: Unit
+                            , appendChild :: Unit -> Unit
+                            , insertBefore :: Unit -> Unit
+                            }
+                       , createElement :: String -> {
+                            innerText :: String
+                          , href :: String
+                          }
                        }
 
 

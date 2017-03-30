@@ -2,7 +2,7 @@ module Test.QueryEmail ( testQueryForDivTags
                        , testEmailExtraction ) where
 
 
-import Prelude ((==), bind, ($), Unit)
+import Prelude (Unit, (==), bind, ($), unit)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Aff (Aff)
 import DOM.QueryDocument (readEmails, DocumentElement)
@@ -26,6 +26,15 @@ divTags = { getElementsByClassName: \class_ ->
                  "vR" -> [ { firstChild: { getAttribute: \attr -> "omaturana@gmail.com" } }
                          , { firstChild: { getAttribute: \attr -> "gpalacios@gmail.com" } } ]
                  _ -> []
+          , querySelector: \_ -> Just {
+                 firstChild: unit
+               , appendChild: (\_ -> unit)
+               , insertBefore: (\_ -> unit)
+               }
+          , createElement: \_ -> {
+                 innerText: ""
+               , href: ""
+               }
           }
 
 
@@ -39,6 +48,15 @@ emailAttrs = { getElementsByClassName: \_ -> [ { firstChild: { getAttribute: \at
                                                                 if attr == "email"
                                                                   then "gpalacios@gmail.com"
                                                                   else "NO-EMAIL" } } ]
+             , querySelector: \_ -> Just {
+                    firstChild: unit
+                  , appendChild: (\_ -> unit)
+                  , insertBefore: (\_ -> unit)
+                  }
+             , createElement: \_ -> {
+                    innerText: ""
+                  , href: ""
+                  }
              }
 
 
