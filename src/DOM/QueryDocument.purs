@@ -29,7 +29,7 @@ import Data.Traversable (traverse)
 type DocumentElement = { getElementsByClassName ::
                             String -> Array { firstChild :: { getAttribute :: String -> String } }
                        , querySelector :: String -> Maybe {
-                              firstChild :: Unit
+                              childNodes :: Array Unit
                             , appendChild :: Unit -> Unit
                             , insertBefore :: Unit -> Unit
                             }
@@ -57,7 +57,7 @@ readEmails mock = do
   pure emails
 
 
--- << Paste a link in the Gmail's compose dialog
+-- << Paste a link in the Gmail's compose box
 pasteLink :: forall eff .
              Maybe DocumentElement
           -> String
@@ -65,6 +65,7 @@ pasteLink :: forall eff .
 pasteLink optDoc link = do
   value <- curried (Null optDoc) link
   let eitherDoc = unNull <$> runExcept (readNull readString value)
+  -- Returns link for create tests
   either (const $ pure Nothing) pure eitherDoc
   where
     curried = runFn2 uncurriedPasteLink

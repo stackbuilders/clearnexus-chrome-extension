@@ -13,13 +13,21 @@ import Data.Maybe (Maybe(..))
 import Network.HTTP.Affjax (AJAX)
 import Node.Process (PROCESS, lookupEnv, exit)
 import Prelude (Unit, bind)
-import Test.GenClient (testGetEmailPropsWithSubscribedEmail, testGetEmailPropsWithUnsubscribedEmail, testGetEmailPropsWithResubscribedEmail, testGetEmailPropsWithInvalidToken, testGetEmailPropsWithNonExistentEmail, testPostNewLinkWithUnsuscribedEmail, testGetLinkWithInvalidUserToken, testGetLinkWithInvalidLinkToken, testGetLinkWithValidTokens)
 import Test.PasteLink (testInnerTextForLink, testSelectors)
 import Test.QueryEmail (testQueryForDivTags, testEmailExtraction)
 import Test.Spec (describe)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (run)
 import Test.Storage (testQueryForToken)
+import Test.GenClient ( testGetEmailPropsWithSubscribedEmail
+                      , testGetEmailPropsWithUnsubscribedEmail
+                      , testGetEmailPropsWithResubscribedEmail
+                      , testGetEmailPropsWithInvalidToken
+                      , testGetEmailPropsWithNonExistentEmail
+                      , testPostNewLinkWithUnsuscribedEmail
+                      , testGetLinkWithInvalidUserToken
+                      , testGetLinkWithInvalidLinkToken
+                      , testGetLinkWithValidTokens           )
 
 
 main :: forall eff . Eff (  process :: PROCESS

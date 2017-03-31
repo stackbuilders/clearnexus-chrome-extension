@@ -23,15 +23,17 @@ exports.uncurriedPasteLink = function(document_,  link) {
     var signature = document.querySelector('div[data-smartmail=gmail_signature]');
     var a = document.createElement('a');
 
-    //Dinamically  assign the signature object for testing purposes
+    //Dinamically  assign objects for testing purposes
     signature = document_.value0 ? signature.value0 : signature;
-    a.innerText = 'Click here to unsubscribe';
+    div = document_.value0 ? div.value0 : div;
+
+    a.innerText = '\nClick here to unsubscribe\n';
     a.href = link;
 
-    if (signature) {
-      var ref = signature.firstChild;
+    if (signature && div) {
+      var ref = div.childNodes[2];
+      div.insertBefore(a, ref);
 
-      signature.insertBefore(a, ref);
       return a.innerText;
     }
 

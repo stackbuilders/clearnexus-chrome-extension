@@ -18,7 +18,7 @@ import DOM.Event.Types (EventType(..))
 import Control.Monad.Aff (runAff)
 import Config ( loadConfig
               , setEnv
-              , CHROME  )
+              , CHROME   )
 
 
 -- << CHANGE THIS VARIABLE ACCORDING TO ENVIRONMENT >> --

@@ -21,15 +21,18 @@ type PasteLinkTest = forall eff .
 composeSelector :: String
 composeSelector = "div.Am.Al.editable.LW-avf"
 
+innerText :: String
+innerText = "\nClick here to unsubscribe\n"
+
 signatureSelector :: String
 signatureSelector = "div[data-smartmail=gmail_signature]"
 
 
--- <<  Mock to test the correct searching of <div> tags with class vR
+-- << Mock to test the correct searching of <div> tags with class vR
 linkText :: DocumentElement
 linkText = {  getElementsByClassName: \_ -> []
            ,  querySelector: \_ -> Just {
-                 firstChild: unit
+                 childNodes: [unit, unit, unit]
                , appendChild: (\_ -> unit)
                , insertBefore: (\_ -> unit)
                }
@@ -45,7 +48,7 @@ selectors = {  getElementsByClassName: \_ -> []
             ,  querySelector: \selector ->
                 if selector == composeSelector || selector == signatureSelector
                 then Just {
-                 firstChild: unit
+                 childNodes: [unit, unit, unit]
                , appendChild: (\_ -> unit)
                , insertBefore: (\_ -> unit)
                }
@@ -61,11 +64,11 @@ testInnerTextForLink :: PasteLinkTest
 testInnerTextForLink =
   it "returns the correct inner text for the <a> tag" do
     value <- liftEff $ pasteLink (Just linkText) "<SOME LINK>"
-    value `shouldEqual` Just "Click here to unsubscribe"
+    value `shouldEqual` Just innerText
 
 
 testSelectors :: PasteLinkTest
 testSelectors =
   it "requeries the correct selectors in the Gmail's document" do
     value <- liftEff $ pasteLink (Just selectors) "<SOME LINK>"
-    value `shouldEqual` Just "Click here to unsubscribe"
+    value `shouldEqual` Just innerText

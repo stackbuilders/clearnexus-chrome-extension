@@ -70,6 +70,7 @@ reqCallback serverUrl email items = do
         _ -> liftEff $ logShow $ errorToString ajaxErr
     asyncPostLink _ = pure unit
 
+
 -- << Listener for events in the <textarea name="to"> element
 textAreaListener :: forall eff .
                     Config

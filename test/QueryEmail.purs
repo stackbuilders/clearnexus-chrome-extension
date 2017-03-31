@@ -15,11 +15,12 @@ import Test.Spec.Assertions (shouldEqual)
 import Data.Maybe (Maybe(..))
 
 
-type QueryEmailTest = forall eff .
-                      StateT (Array (Group (Aff (dom ∷ DOM | eff) Unit))) Identity Unit
+type QueryEmailTest =
+  forall eff .
+  StateT (Array (Group (Aff (dom ∷ DOM | eff) Unit))) Identity Unit
 
 
---- <<  Mock to test the correct searching of <div> tags with class vR
+--- << Mock to test the correct searching of <div> tags with class vR
 divTags :: DocumentElement
 divTags = { getElementsByClassName: \class_ ->
                case class_ of
@@ -27,7 +28,7 @@ divTags = { getElementsByClassName: \class_ ->
                          , { firstChild: { getAttribute: \attr -> "gpalacios@gmail.com" } } ]
                  _ -> []
           , querySelector: \_ -> Just {
-                 firstChild: unit
+                 childNodes: [unit, unit, unit]
                , appendChild: (\_ -> unit)
                , insertBefore: (\_ -> unit)
                }
@@ -38,7 +39,7 @@ divTags = { getElementsByClassName: \class_ ->
           }
 
 
---- <<  Mock to test extraction of email attribute from first child of <div class="vR"> tags
+--- << Mock to test extraction of email attribute from first child of <div class="vR"> tags
 emailAttrs :: DocumentElement
 emailAttrs = { getElementsByClassName: \_ -> [ { firstChild: { getAttribute: \attr ->
                                                                 if attr == "email"
@@ -49,7 +50,7 @@ emailAttrs = { getElementsByClassName: \_ -> [ { firstChild: { getAttribute: \at
                                                                   then "gpalacios@gmail.com"
                                                                   else "NO-EMAIL" } } ]
              , querySelector: \_ -> Just {
-                    firstChild: unit
+                    childNodes: [unit, unit, unit]
                   , appendChild: (\_ -> unit)
                   , insertBefore: (\_ -> unit)
                   }
