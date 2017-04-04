@@ -112,21 +112,21 @@ testGetEmailPropsWithResubscribedEmail testUserToken =
 
 testGetEmailPropsWithInvalidToken :: forall eff . GenClientTest eff
 testGetEmailPropsWithInvalidToken =
-  it "returns Status Code 500 when called with Invalid Token" do
+  it "returns Status Code 401 when called with Invalid Token" do
     response <- getSubscriptionStatus clearNexusStaging resubscribedEmail invalidToken
-    getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 500)"
+    getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 401)"
 
 
 testGetLinkWithInvalidUserToken :: forall eff . String -> GenClientTest eff
 testGetLinkWithInvalidUserToken linkToken =
-  it "returns Status Code 500 when called with Invalid User Token" do
+  it "returns Status Code 401 when called with Invalid User Token" do
     response <- getLink clearNexusStaging linkToken invalidToken
-    getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 500)"
+    getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 401)"
 
 
 testGetLinkWithInvalidLinkToken :: forall eff . String -> GenClientTest eff
 testGetLinkWithInvalidLinkToken userToken =
-  it "returns Status Code 500 when called with Invalid User Token" do
+  it "returns Status Code 500 when called with Invalid Link Token" do
     response <- getLink clearNexusStaging invalidToken userToken
     getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 500)"
 
