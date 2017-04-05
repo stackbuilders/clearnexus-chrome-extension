@@ -15,7 +15,7 @@ import DOM.Event.Types (Event, EventType(..))
 import DOM.HTML (window)
 import DOM.HTML.Types (ALERT)
 import DOM.HTML.Window (alert)
-import DOM.QueryDocument (queryDocElt, readEmails)
+import DOM.QueryDocument (queryDocElt, readEmails, pasteLink)
 import Data.Array (head)
 import Data.Either (Either(..))
 import Data.Function.Eff (EffFn1, mkEffFn1, runEffFn1)
@@ -55,18 +55,21 @@ reqCallback serverUrl email items = do
     asyncGetEmailProps = do
       (EmailProperties props) <- ExceptT $ getSubscriptionStatus serverUrl email items.authtoken
       (LinkData lData) <- ExceptT $ getLink serverUrl props.link_token items.authtoken
-      let msg = if props.subscribed
-                then "Email is SUBSCRIBED: " <> lData.unsubscription_link
-                else "Email is UNSUBSCRIBED"
-      displayAlert msg
+      if props.subscribed
+        then do
+          liftEff $ pasteLink Nothing lData.unsubscription_link
+          pure unit
+        else  displayAlert "Email is UNSUBSCRIBED"
     -- << >> --
     asyncPostLink (Left ajaxErr@(AjaxError err)) =
       case err.description of
         UnexpectedHTTPStatus  { status: StatusCode 404 } -> do
           (LinkData lData) <- ExceptT $ postNewLink serverUrl email items.authtoken
-          displayAlert ("Link created for the first time: " <> lData.unsubscription_link)
+          liftEff $ pasteLink Nothing lData.unsubscription_link
+          pure unit
         _ -> liftEff $ logShow $ errorToString ajaxErr
     asyncPostLink _ = pure unit
+
 
 -- << Listener for events in the <textarea name="to"> element
 textAreaListener :: forall eff .
@@ -82,8 +85,8 @@ textAreaListener (Config conf) event = do
   maybeElt <- queryDocElt "div[class=vR]"
   case maybeElt of
     Nothing -> do
-      -- Poll events every second not to block the browser
-      setTimeout 1000 (textAreaListener (Config conf) event)
+      -- Poll events every 500 mls not to block the browser
+      setTimeout 500 (textAreaListener (Config conf) event)
       pure unit
     Just textArea ->
       addEventListener (EventType "dblclick")

@@ -1,6 +1,8 @@
 module Test.Main where
 
 
+import Data.Tuple
+import Config (CHROME)
 import Control.Monad.Aff.AVar (AVAR)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
@@ -8,25 +10,24 @@ import Control.Monad.Eff.Timer (TIMER)
 import DOM (DOM)
 import DOM.HTML.Types (ALERT)
 import Data.Maybe (Maybe(..))
-import Data.Tuple
 import Network.HTTP.Affjax (AJAX)
 import Node.Process (PROCESS, lookupEnv, exit)
-import Prelude (Unit, bind, ($))
+import Prelude (Unit, bind)
+import Test.PasteLink (testInnerTextForLink, testSelectors)
 import Test.QueryEmail (testQueryForDivTags, testEmailExtraction)
 import Test.Spec (describe)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (run)
 import Test.Storage (testQueryForToken)
-import Config (CHROME)
-import Test.GenClient (  testGetEmailPropsWithSubscribedEmail
-                       , testGetEmailPropsWithUnsubscribedEmail
-                       , testGetEmailPropsWithResubscribedEmail
-                       , testGetEmailPropsWithInvalidToken
-                       , testGetEmailPropsWithNonExistentEmail
-                       , testPostNewLinkWithUnsuscribedEmail
-                       , testGetLinkWithInvalidUserToken
-                       , testGetLinkWithInvalidLinkToken
-                       , testGetLinkWithValidTokens          )
+import Test.GenClient ( testGetEmailPropsWithSubscribedEmail
+                      , testGetEmailPropsWithUnsubscribedEmail
+                      , testGetEmailPropsWithResubscribedEmail
+                      , testGetEmailPropsWithInvalidToken
+                      , testGetEmailPropsWithNonExistentEmail
+                      , testPostNewLinkWithUnsuscribedEmail
+                      , testGetLinkWithInvalidUserToken
+                      , testGetLinkWithInvalidLinkToken
+                      , testGetLinkWithValidTokens           )
 
 
 main :: forall eff . Eff (  process :: PROCESS
@@ -70,3 +71,6 @@ main =  do
           testQueryForDivTags
           testEmailExtraction
           testQueryForToken
+        describe "Pasting link in Gmail's compose box" do
+          testInnerTextForLink
+          testSelectors

@@ -2,7 +2,7 @@ module Test.QueryEmail ( testQueryForDivTags
                        , testEmailExtraction ) where
 
 
-import Prelude ((==), bind, ($), Unit)
+import Prelude (Unit, (==), bind, ($), unit)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Aff (Aff)
 import DOM.QueryDocument (readEmails, DocumentElement)
@@ -15,21 +15,31 @@ import Test.Spec.Assertions (shouldEqual)
 import Data.Maybe (Maybe(..))
 
 
-type QueryEmailTest = forall eff .
-                      StateT (Array (Group (Aff (dom ∷ DOM | eff) Unit))) Identity Unit
+type QueryEmailTest =
+  forall eff .
+  StateT (Array (Group (Aff (dom ∷ DOM | eff) Unit))) Identity Unit
 
 
---- <<  Mock to test the correct searching of <div> tags with class vR
+--- << Mock to test the correct searching of <div> tags with class vR
 divTags :: DocumentElement
 divTags = { getElementsByClassName: \class_ ->
                case class_ of
                  "vR" -> [ { firstChild: { getAttribute: \attr -> "omaturana@gmail.com" } }
                          , { firstChild: { getAttribute: \attr -> "gpalacios@gmail.com" } } ]
                  _ -> []
+          , querySelector: \_ -> Just {
+                 childNodes: [unit, unit, unit]
+               , appendChild: (\_ -> unit)
+               , insertBefore: (\_ -> unit)
+               }
+          , createElement: \_ -> {
+                 innerText: ""
+               , href: ""
+               }
           }
 
 
---- <<  Mock to test extraction of email attribute from first child of <div class="vR"> tags
+--- << Mock to test extraction of email attribute from first child of <div class="vR"> tags
 emailAttrs :: DocumentElement
 emailAttrs = { getElementsByClassName: \_ -> [ { firstChild: { getAttribute: \attr ->
                                                                 if attr == "email"
@@ -39,6 +49,15 @@ emailAttrs = { getElementsByClassName: \_ -> [ { firstChild: { getAttribute: \at
                                                                 if attr == "email"
                                                                   then "gpalacios@gmail.com"
                                                                   else "NO-EMAIL" } } ]
+             , querySelector: \_ -> Just {
+                    childNodes: [unit, unit, unit]
+                  , appendChild: (\_ -> unit)
+                  , insertBefore: (\_ -> unit)
+                  }
+             , createElement: \_ -> {
+                    innerText: ""
+                  , href: ""
+                  }
              }
 
 

@@ -1,3 +1,4 @@
+
 module Main where
 
 
@@ -11,13 +12,13 @@ import DOM (DOM)
 import Data.Maybe (Maybe(..))
 import DOM.HTML.Types (ALERT)
 import DOM.Listener (textAreaListener)
-import DOM.QueryDocument (delayExtInjection)
+import DOM.QueryDocument (delayExtInjection, pasteLink)
 import Network.HTTP.Affjax (AJAX)
 import DOM.Event.Types (EventType(..))
 import Control.Monad.Aff (runAff)
 import Config ( loadConfig
               , setEnv
-              , CHROME  )
+              , CHROME   )
 
 
 -- << CHANGE THIS VARIABLE ACCORDING TO ENVIRONMENT >> --

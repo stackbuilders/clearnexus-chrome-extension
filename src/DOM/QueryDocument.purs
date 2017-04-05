@@ -1,7 +1,8 @@
 module DOM.QueryDocument ( readEmails
+                         , pasteLink
                          , queryDocElt
                          , delayExtInjection
-                         , DocumentElement ) where
+                         , DocumentElement  ) where
 
 
 import Prelude
@@ -18,7 +19,8 @@ import DOM.Node.ParentNode (querySelector)
 import DOM.Node.Types (documentToParentNode, elementToEventTarget)
 import Data.Either (either)
 import Data.Foreign (Foreign, readArray, readString)
-import Data.Foreign.Null (Null(..))
+import Data.Foreign.Null (Null(..), unNull, readNull)
+import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toMaybe)
 import Data.Traversable (traverse)
@@ -26,10 +28,24 @@ import Data.Traversable (traverse)
 
 type DocumentElement = { getElementsByClassName ::
                             String -> Array { firstChild :: { getAttribute :: String -> String } }
+                       , querySelector :: String -> Maybe {
+                              childNodes :: Array Unit
+                            , appendChild :: Unit -> Unit
+                            , insertBefore :: Unit -> Unit
+                            }
+                       , createElement :: String -> {
+                            innerText :: String
+                          , href :: String
+                          }
                        }
 
 
 foreign import queryEmails :: forall eff . Null DocumentElement -> Eff (dom :: DOM | eff) Foreign
+
+foreign import uncurriedPasteLink :: forall eff .
+                                     Fn2 (Null DocumentElement)
+                                         String
+                                         (Eff (dom :: DOM | eff) Foreign)
 
 
 -- << When used in browser Do Not provide DocumentElement (Nothing). In tests, inject Just DocumentElement
@@ -39,6 +55,20 @@ readEmails mock = do
   values <- pure $ either (const []) id (runExcept $ readArray query)
   emails <- pure $ either (const []) id (runExcept $ traverse readString values)
   pure emails
+
+
+-- << Paste a link in the Gmail's compose box
+pasteLink :: forall eff .
+             Maybe DocumentElement
+          -> String
+          -> Eff ( dom :: DOM | eff) (Maybe String)
+pasteLink optDoc link = do
+  value <- curried (Null optDoc) link
+  let eitherDoc = unNull <$> runExcept (readNull readString value)
+  -- Returns link for create tests
+  either (const $ pure Nothing) pure eitherDoc
+  where
+    curried = runFn2 uncurriedPasteLink
 
 
 -- << Query a Gmail doc element acording to a query-selector

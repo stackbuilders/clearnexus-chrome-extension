@@ -3,7 +3,7 @@ module GenerateClient.Types where
 
 import Data.Lens (Lens', Prism', lens, prism')
 import Data.Maybe (Maybe, Maybe(..))
-import Prim (Array, Boolean, Int, String)
+import Prim (Array, Boolean, String)
 
 import Prelude
 import Data.Generic (class Generic)
@@ -28,14 +28,14 @@ newtype ClickEventData =
     ClickEventData {
       subscribed :: Boolean
     , time :: String
-    , ip :: Maybe Int
+    , ip :: Maybe String
     , user_agent :: Maybe String
     }
 
 derive instance genericClickEventData :: Generic ClickEventData
 
 --------------------------------------------------------------------------------
-_ClickEventData :: Prism' ClickEventData { subscribed :: Boolean, time :: String, ip :: Maybe Int, user_agent :: Maybe String}
+_ClickEventData :: Prism' ClickEventData { subscribed :: Boolean, time :: String, ip :: Maybe String, user_agent :: Maybe String}
 _ClickEventData = prism' ClickEventData f
   where
     f (ClickEventData r) = Just r
