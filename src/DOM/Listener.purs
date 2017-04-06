@@ -63,6 +63,8 @@ reqCallback serverUrl email items = do
     -- << >> --
     asyncPostLink (Left ajaxErr@(AjaxError err)) =
       case err.description of
+        UnexpectedHTTPStatus  { status: StatusCode 401 } -> do
+          displayAlert "Please provide auth token"
         UnexpectedHTTPStatus  { status: StatusCode 404 } -> do
           (LinkData lData) <- ExceptT $ postNewLink serverUrl email items.authtoken
           liftEff $ pasteLink Nothing lData.unsubscription_link
