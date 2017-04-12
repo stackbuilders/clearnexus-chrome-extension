@@ -10,15 +10,16 @@ import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Eff.Timer (TIMER, setTimeout)
 import Control.Monad.Except.Trans (ExceptT(..), runExceptT)
 import DOM (DOM)
-import DOM.Event.EventTarget (addEventListener, eventListener)
-import DOM.Event.Types (Event, EventType(..))
+import DOM.Event.Types (Event)
 import DOM.HTML (window)
 import DOM.HTML.Types (ALERT)
 import DOM.HTML.Window (alert)
-import DOM.QueryDocument (queryDocElt, readEmails, pasteLink)
+import DOM.QueryDocument (readEmails, pasteLink)
 import Data.Array (head)
 import Data.Either (Either(..))
+import Data.Foreign (Foreign)
 import Data.Function.Eff (EffFn1, mkEffFn1, runEffFn1)
+import Data.Function.Uncurried (Fn4, runFn4)
 import Data.Maybe (Maybe(..))
 import GenerateClient.Types (EmailProperties(..), LinkData(..))
 import Network.HTTP.Affjax (AJAX)
@@ -35,6 +36,12 @@ foreign import getStoredToken :: forall eff r .
                                         (EffFn1 (ajax :: AJAX, chrome :: CHROME | eff) (Items r) Unit)
                                         Unit
 
+foreign import uncurriedAddEventListener :: forall eff .
+                                            Fn4 String
+                                                String
+                                                (Eff (dom :: DOM | eff) Unit)
+                                                Boolean
+                                                (Eff (dom :: DOM | eff) Foreign)
 
 reqCallback :: forall eff r .
                String
@@ -84,27 +91,27 @@ textAreaListener :: forall eff .
                         , ajax :: AJAX
                         , chrome :: CHROME | eff ) Unit
 textAreaListener (Config conf) event = do
-  maybeElt <- queryDocElt "div[class=vR]"
-  case maybeElt of
+  runFn4 uncurriedAddEventListener "div[class=vR]" "dblclick" emailListener false
+  setTimeout 500 $ textAreaListener (Config conf) event
+  pure unit
+
+-- << Listener for emails in textarea
+emailListener :: forall eff . 
+                 Eff ( dom ∷ DOM 
+                     , timer ∷ TIMER 
+                     , ajax ∷ AJAX 
+                     , chrome ∷ CHROME 
+                     , console ∷ CONSOLE 
+                     , alert ∷ ALERT | eff ) Unit
+emailListener = do
+  win <- window
+  emails <- readEmails Nothing
+  case head emails of
     Nothing -> do
       -- Poll events every 500 mls not to block the browser
-      setTimeout 500 (textAreaListener (Config conf) event)
+      setTimeout 500 $ emailListener
       pure unit
-    Just textArea ->
-      addEventListener (EventType "dblclick")
-                       (eventListener $ emailListener)
-                       false
-                       textArea
-  where
-    -- Listener for emails in textarea
-    emailListener evt = do
-      win <- window
-      emails <- readEmails Nothing
-      case head emails of
-        Nothing -> do
-          -- Poll events every 500 mls not to block the browser
-          setTimeout 500 $ emailListener evt
-          pure unit
-        Just email -> do
-          let callback = mkEffFn1 $ reqCallback conf.url email
-          runEffFn1 getStoredToken callback
+    Just email -> do
+      let callback = mkEffFn1 $ reqCallback "https://staging.clearnex.us/" email
+      runEffFn1 getStoredToken callback
+      pure unit
