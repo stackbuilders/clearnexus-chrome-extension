@@ -10,7 +10,7 @@ import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Control.Monad.Eff.Timer (TIMER, setTimeout)
 import Control.Monad.Except.Trans (ExceptT(..), runExceptT)
 import DOM (DOM)
-import DOM.Event.EventTarget (addEventListener, eventListener)
+import DOM.Event.EventTarget (addEventListener, removeEventListener, eventListener)
 import DOM.Event.Types (Event, EventType(..))
 import DOM.HTML (window)
 import DOM.HTML.Types (ALERT)
@@ -92,19 +92,22 @@ textAreaListener (Config conf) event = do
       pure unit
     Just textArea ->
       addEventListener (EventType "dblclick")
-                       (eventListener $ emailListener)
+                       (eventListener $ emailListener textArea)
                        false
                        textArea
   where
     -- Listener for emails in textarea
-    emailListener evt = do
+    emailListener elt evt = do
       win <- window
       emails <- readEmails Nothing
       case head emails of
         Nothing -> do
           -- Poll events every 500 mls not to block the browser
-          setTimeout 500 $ emailListener evt
+          setTimeout 500 $ emailListener elt evt
           pure unit
         Just email -> do
           let callback = mkEffFn1 $ reqCallback conf.url email
           runEffFn1 getStoredToken callback
+          -- Remove previous listener not to accumulate them
+          removeEventListener (EventType "dblclick") (eventListener $ emailListener elt) false elt
+          textAreaListener (Config conf) event
