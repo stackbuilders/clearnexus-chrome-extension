@@ -2,7 +2,7 @@ module DOM.Listener (textAreaListener) where
 
 
 import Prelude
-import Config (Config(..), CHROME)
+import Config (CHROME, Config(..), loadConfig)
 import Control.Monad.Aff (runAff)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
@@ -82,18 +82,18 @@ reqCallback serverUrl email items = do
 
 -- << Listener for events in the <textarea name="to"> element
 textAreaListener :: forall eff .
-                    Config
-                 -> Event
+                    Event
                  -> Eff ( dom :: DOM
                         , console :: CONSOLE
                         , alert :: ALERT
                         , timer :: TIMER
                         , ajax :: AJAX
                         , chrome :: CHROME | eff ) Unit
-textAreaListener (Config conf) event = do
+textAreaListener event = do
   runFn4 uncurriedAddEventListener "div[class=vR]" "dblclick" emailListener false
-  setTimeout 500 $ textAreaListener (Config conf) event
+  setTimeout 500 $ textAreaListener event
   pure unit
+
 
 -- << Listener for emails in textarea
 emailListener :: forall eff . 
@@ -112,6 +112,8 @@ emailListener = do
       setTimeout 500 $ emailListener
       pure unit
     Just email -> do
-      let callback = mkEffFn1 $ reqCallback "https://staging.clearnex.us/" email
+      let callback = mkEffFn1 $ reqCallback (getUrl loadConfig) email
       runEffFn1 getStoredToken callback
       pure unit
+      where 
+        getUrl (Config conf) = conf.url
