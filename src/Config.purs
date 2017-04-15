@@ -1,18 +1,12 @@
-module Config ( setEnv
-              , Config(..)
+module Config ( Config(..)
+              , environment
               , loadConfig
               , CHROME   ) where
 
 
-import Prelude (Unit, bind, pure)
-import Control.Monad.Aff (Aff)
-import DOM (DOM)
-import Data.Maybe (Maybe)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE)
-import Data.Foreign.Null (Null(..))
-import Data.Function.Uncurried (Fn2, runFn2)
-
+-- << CHANGE THIS VARIABLE ACCORDING TO ENVIRONMENT >> --
+environment :: String
+environment = "development"
 
 foreign import data CHROME :: !
 
@@ -35,29 +29,9 @@ production = Config {
   url: "https://clearnex.us/"
   }
 
-
-type EnvSetter = { storage ::
-                      { sync ::
-                           { set :: Fn2 Unit Unit Unit }
-                      }
-                 }
-
-
-foreign import loadEnvironment :: forall e r . Aff (dom :: DOM | e) { environment :: String | r }
-
-foreign import uncurriedSaveEnv :: forall eff . Fn2 (Null EnvSetter) String (Eff (console :: CONSOLE | eff) Unit)
-
-
-loadConfig :: forall e . Aff (dom :: DOM | e) Config
+loadConfig :: Config
 loadConfig = do
-  items <- loadEnvironment
-  case items.environment of
-    "development" -> pure development
-    "staging" -> pure staging
-    _ -> pure production
-
-setEnv :: forall eff .
-          Maybe EnvSetter
-       -> String
-       ->  Eff (console :: CONSOLE | eff) Unit
-setEnv chrome env = (runFn2 uncurriedSaveEnv) (Null chrome) env
+  case environment of
+    "development" -> development
+    "staging" -> staging
+    _ -> production
