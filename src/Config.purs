@@ -43,12 +43,12 @@ type EnvSetter = { storage ::
                  }
 
 
-foreign import loadEnvironment :: forall e r . Aff (dom :: DOM | e) { environment :: String | r }
+foreign import loadEnvironment :: forall eff r . Aff (dom :: DOM | eff) { environment :: String | r }
 
 foreign import uncurriedSaveEnv :: forall eff . Fn2 (Null EnvSetter) String (Eff (console :: CONSOLE | eff) Unit)
 
 
-loadConfig :: forall e . Aff (dom :: DOM | e) Config
+loadConfig :: forall eff . Aff (dom :: DOM | eff) Config
 loadConfig = do
   items <- loadEnvironment
   case items.environment of

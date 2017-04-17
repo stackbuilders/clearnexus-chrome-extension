@@ -1,6 +1,7 @@
 module DOM.QueryDocument ( readEmails
                          , pasteLink
                          , queryDocElt
+                         , queryEmail
                          , delayExtInjection
                          , DocumentElement  ) where
 
@@ -15,6 +16,7 @@ import DOM.Event.Types (Event, EventTarget, EventType)
 import DOM.HTML (window)
 import DOM.HTML.Types (htmlDocumentToDocument)
 import DOM.HTML.Window (document)
+import DOM.Node.Element (getAttribute)
 import DOM.Node.ParentNode (querySelector)
 import DOM.Node.Types (documentToParentNode, elementToEventTarget)
 import Data.Either (either)
@@ -78,6 +80,17 @@ queryDocElt selector = do
   doc <- htmlDocumentToDocument <$> document win
   elt <- toMaybe <$> querySelector selector (documentToParentNode doc)
   pure $ elementToEventTarget <$> elt
+
+
+-- << Query an email from the Gmail's compose box
+queryEmail :: forall eff . Eff (dom :: DOM | eff) (Maybe String)
+queryEmail = do
+  win <- window
+  doc <- htmlDocumentToDocument <$> document win
+  maybeElt <- toMaybe <$> querySelector "div.vR span" (documentToParentNode doc)
+  case maybeElt of
+    Just elt -> toMaybe <$> getAttribute "email" elt
+    _ -> pure Nothing
 
 
 -- << Wrapper to delay the injection of our extension's JavaScript code until a
