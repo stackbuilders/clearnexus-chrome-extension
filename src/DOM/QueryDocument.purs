@@ -1,5 +1,4 @@
-module DOM.QueryDocument ( readEmails
-                         , pasteLink
+module DOM.QueryDocument ( pasteLink
                          , queryDocElt
                          , queryEmail
                          , delayExtInjection
@@ -20,12 +19,11 @@ import DOM.Node.Element (getAttribute)
 import DOM.Node.ParentNode (querySelector)
 import DOM.Node.Types (documentToParentNode, elementToEventTarget)
 import Data.Either (either)
-import Data.Foreign (Foreign, readArray, readString)
+import Data.Foreign (Foreign, readString)
 import Data.Foreign.Null (Null(..), unNull, readNull)
 import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toMaybe)
-import Data.Traversable (traverse)
 
 
 type DocumentElement = { getElementsByClassName ::
@@ -42,21 +40,10 @@ type DocumentElement = { getElementsByClassName ::
                        }
 
 
-foreign import queryEmails :: forall eff . Null DocumentElement -> Eff (dom :: DOM | eff) Foreign
-
 foreign import uncurriedPasteLink :: forall eff .
                                      Fn2 (Null DocumentElement)
                                          String
                                          (Eff (dom :: DOM | eff) Foreign)
-
-
--- << When used in browser Do Not provide DocumentElement (Nothing). In tests, inject Just DocumentElement
-readEmails :: forall eff .  Maybe DocumentElement -> Eff (dom :: DOM | eff) (Array String)
-readEmails mock = do
-  query <- queryEmails (Null mock) -- provide the mock
-  values <- pure $ either (const []) id (runExcept $ readArray query)
-  emails <- pure $ either (const []) id (runExcept $ traverse readString values)
-  pure emails
 
 
 -- << Paste a link in the Gmail's compose box

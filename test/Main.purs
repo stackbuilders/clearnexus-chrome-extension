@@ -14,7 +14,6 @@ import Network.HTTP.Affjax (AJAX)
 import Node.Process (PROCESS, lookupEnv, exit)
 import Prelude (Unit, bind)
 import Test.PasteLink (testInnerTextForLink, testSelectors)
-import Test.QueryEmail (testQueryForDivTags, testEmailExtraction)
 import Test.Spec (describe)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (run)
@@ -68,8 +67,6 @@ main =  do
    --     testPostNewLinkWithUnsuscribedEmail userToken
       describe "DOM Module" do
         describe "Querying Gmail's document elements" do
-          testQueryForDivTags
-          testEmailExtraction
           testQueryForToken
         describe "Pasting link in Gmail's compose box" do
           testInnerTextForLink
