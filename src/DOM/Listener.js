@@ -8,7 +8,7 @@ exports.getStoredToken = function(cb) {
 
 /* Custom setTimeout to avoid accumulative background callbacks */
 
-var timeOutId;
+var timeOutId; // This Global Variable is only for timer-cleaning purposes!
 
 exports.safeSetTimeout = function(cb) {
   clearTimeout(timeOutId);

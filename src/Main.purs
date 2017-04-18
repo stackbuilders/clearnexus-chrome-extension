@@ -10,7 +10,7 @@ import Control.Monad.Eff.Timer (TIMER)
 import DOM (DOM)
 import Data.Maybe (Maybe(..))
 import DOM.HTML.Types (ALERT)
-import DOM.Listener (textAreaListener)
+import DOM.Listener (textAreaListener, CLEANTIMER)
 import DOM.QueryDocument (delayExtInjection)
 import Network.HTTP.Affjax (AJAX)
 import DOM.Event.Types (EventType(..))
@@ -32,6 +32,7 @@ main :: forall eff . Eff (  alert :: ALERT
                          ,  console :: CONSOLE
                          ,  ajax :: AJAX
                          ,  dom :: DOM
+                         , cleantimer :: CLEANTIMER
                          ,  chrome :: CHROME | eff  ) Unit
 main = do
   setEnv Nothing environment

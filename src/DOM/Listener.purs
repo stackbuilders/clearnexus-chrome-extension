@@ -1,4 +1,4 @@
-module DOM.Listener (textAreaListener) where
+module DOM.Listener (textAreaListener, CLEANTIMER) where
 
 
 import Prelude
@@ -28,6 +28,8 @@ import Util (getLink, getSubscriptionStatus, postNewLink)
 type Items r = { authtoken :: String | r }
 
 
+foreign import data CLEANTIMER :: !
+
 -- << Type EffFn1 is necessary due to compilation issues of callbacks with effects
 foreign import getStoredToken :: forall eff r .
                                  EffFn1 (ajax :: AJAX, chrome :: CHROME | eff)
@@ -35,7 +37,9 @@ foreign import getStoredToken :: forall eff r .
                                         Unit
 
 foreign import safeSetTimeout :: forall eff .
-                                 EffFn1 eff (EffFn1 eff Unit Unit) Unit
+                                 EffFn1 (cleantimer :: CLEANTIMER | eff)
+                                        (EffFn1 (cleantimer :: CLEANTIMER | eff) Unit Unit)
+                                        Unit
 
 
 reqCallback :: forall eff r .
@@ -48,6 +52,7 @@ reqCallback :: forall eff r .
                    , timer :: TIMER
                    , alert :: ALERT
                    , ajax :: AJAX
+                   , cleantimer :: CLEANTIMER
                    , chrome :: CHROME | eff ) Unit
 reqCallback serverUrl email event items = do
   runAff logShow (const $ pure unit) (runExceptT asyncGetEmailProps >>= (runExceptT <<< asyncPostLink))
@@ -88,13 +93,14 @@ textAreaListener :: forall eff .
                         , console :: CONSOLE
                         , alert :: ALERT
                         , timer :: TIMER
+                        , cleantimer :: CLEANTIMER
                         , ajax :: AJAX
                         , chrome :: CHROME | eff ) Unit
 textAreaListener serverUrl lastEmail event = do
   maybeEmail <- queryEmail
   case maybeEmail of
     Nothing -> do
-      -- User safeSettimeout not to block the browser and not to accumulate callbacks
+      -- Use safeSettimeout not to block the browser and not to accumulate callbacks
       -- in the background.
       runEffFn1 safeSetTimeout tmOutCallback
     Just email -> do
