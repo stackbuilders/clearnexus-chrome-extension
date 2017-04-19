@@ -8,21 +8,15 @@ import Control.Monad.Aff (Aff)
 import Control.Monad.Except.Trans (ExceptT, runExceptT)
 import Control.Monad.Reader.Trans (ReaderT, runReaderT)
 import Data.Either (Either)
-import Data.Eq (class Eq , eq)
-import Function (($))
-import Data.Show (class Show , show)
-import GenerateClient.Types ( EmailProperties(..)
-                            , CreateLinkData(..)
-                            , LinkData         )
-import Prelude ((<<<))
-import Prim (String)
+import Data.Eq (class Eq, eq)
+import Data.Show (class Show, show)
+import GenerateClient.Types (EmailProperties(..), CreateLinkData(..), LinkData)
 import Network.HTTP.Affjax (AJAX)
+import Prelude (($), (<<<))
+import Prim (String)
 import Servant.PureScript.Affjax (AjaxError)
 import Servant.PureScript.Settings (SPSettings_, defaultSettings)
-import ServerAPI ( SPParams_(..)
-                 , getApiEmailByEmail
-                 , getApiLinkByToken
-                 , postApiLinks     )
+import ServerAPI (SPParams_(..), getApiEmailByEmail, getApiLinkByToken, postApiLinks)
 
 
 type AjaxRequest eff a = ExceptT AjaxError
