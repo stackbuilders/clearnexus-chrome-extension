@@ -1,4 +1,3 @@
-
 module Main where
 
 
@@ -11,13 +10,14 @@ import Control.Monad.Eff.Timer (TIMER)
 import DOM (DOM)
 import Data.Maybe (Maybe(..))
 import DOM.HTML.Types (ALERT)
-import DOM.Listener (textAreaListener)
-import DOM.QueryDocument (delayExtInjection, pasteLink)
+import DOM.Listener (textAreaListener, CLEANTIMER)
+import DOM.QueryDocument (delayExtInjection)
 import Network.HTTP.Affjax (AJAX)
 import DOM.Event.Types (EventType(..))
 import Control.Monad.Aff (runAff)
 import Config ( loadConfig
               , setEnv
+              , Config(..)
               , CHROME   )
 
 
@@ -32,10 +32,11 @@ main :: forall eff . Eff (  alert :: ALERT
                          ,  console :: CONSOLE
                          ,  ajax :: AJAX
                          ,  dom :: DOM
+                         , cleantimer :: CLEANTIMER
                          ,  chrome :: CHROME | eff  ) Unit
 main = do
   setEnv Nothing environment
-  (flip $ runAff (\_ -> log "Chrome Storage Error...")) loadConfig $ \config -> do
+  (flip $ runAff (\_ -> log "Chrome Storage Error...")) loadConfig $ \(Config conf) -> do
     liftEff $ addListenerToSaveBtn
-    liftEff $ delayExtInjection "div[gh=cm]" (EventType "click") (textAreaListener config)
+    liftEff $ delayExtInjection "div[gh=cm]" (EventType "click") (textAreaListener conf.url "")
   pure unit

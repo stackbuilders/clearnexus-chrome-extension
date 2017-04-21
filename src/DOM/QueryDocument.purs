@@ -1,6 +1,6 @@
-module DOM.QueryDocument ( readEmails
-                         , pasteLink
+module DOM.QueryDocument ( pasteLink
                          , queryDocElt
+                         , queryEmail
                          , delayExtInjection
                          , DocumentElement  ) where
 
@@ -15,15 +15,15 @@ import DOM.Event.Types (Event, EventTarget, EventType)
 import DOM.HTML (window)
 import DOM.HTML.Types (htmlDocumentToDocument)
 import DOM.HTML.Window (document)
+import DOM.Node.Element (getAttribute)
 import DOM.Node.ParentNode (querySelector)
 import DOM.Node.Types (documentToParentNode, elementToEventTarget)
 import Data.Either (either)
-import Data.Foreign (Foreign, readArray, readString)
+import Data.Foreign (Foreign, readString)
 import Data.Foreign.Null (Null(..), unNull, readNull)
 import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (toMaybe)
-import Data.Traversable (traverse)
 
 
 type DocumentElement = { getElementsByClassName ::
@@ -40,21 +40,10 @@ type DocumentElement = { getElementsByClassName ::
                        }
 
 
-foreign import queryEmails :: forall eff . Null DocumentElement -> Eff (dom :: DOM | eff) Foreign
-
 foreign import uncurriedPasteLink :: forall eff .
                                      Fn2 (Null DocumentElement)
                                          String
                                          (Eff (dom :: DOM | eff) Foreign)
-
-
--- << When used in browser Do Not provide DocumentElement (Nothing). In tests, inject Just DocumentElement
-readEmails :: forall eff .  Maybe DocumentElement -> Eff (dom :: DOM | eff) (Array String)
-readEmails mock = do
-  query <- queryEmails (Null mock) -- provide the mock
-  values <- pure $ either (const []) id (runExcept $ readArray query)
-  emails <- pure $ either (const []) id (runExcept $ traverse readString values)
-  pure emails
 
 
 -- << Paste a link in the Gmail's compose box
@@ -78,6 +67,17 @@ queryDocElt selector = do
   doc <- htmlDocumentToDocument <$> document win
   elt <- toMaybe <$> querySelector selector (documentToParentNode doc)
   pure $ elementToEventTarget <$> elt
+
+
+-- << Query an email from the Gmail's compose box
+queryEmail :: forall eff . Eff (dom :: DOM | eff) (Maybe String)
+queryEmail = do
+  win <- window
+  doc <- htmlDocumentToDocument <$> document win
+  maybeElt <- toMaybe <$> querySelector "div.vR span" (documentToParentNode doc)
+  case maybeElt of
+    Just elt -> toMaybe <$> getAttribute "email" elt
+    _ -> pure Nothing
 
 
 -- << Wrapper to delay the injection of our extension's JavaScript code until a
