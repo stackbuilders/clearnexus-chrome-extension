@@ -15,8 +15,13 @@
   "license": "ISC",
   "devDependencies": {
     "bower": "^1.8.0",
+    "gulp": "^3.9.1",
+    "gulp-uglify": "^2.1.2",
+    "gulp-zip": "^4.0.0",
     "pulp": "^10.0.0",
+    "pump": "^1.0.2",
     "purescript": "^0.10.6",
+    "run-sequence": "^1.2.2",
     "xhr2": "^0.1.4"
   }
 }
