@@ -9,8 +9,6 @@ import Control.Monad.Aff (Aff)
 import Control.Monad.Except.Trans (ExceptT, runExceptT)
 import Control.Monad.Reader.Trans (ReaderT, runReaderT)
 import Data.Either (Either)
-import Data.Eq (class Eq, eq)
-import Data.Show (class Show, show)
 import GenerateClient.Types 
 import Network.HTTP.Affjax (AJAX)
 import Prelude (($), (<<<))

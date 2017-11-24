@@ -1,7 +1,7 @@
 module DOM.Listener (textAreaListener, CLEANTIMER) where
 
 
-import Prelude
+import Prelude (Unit, bind, const, pure, unit, ($), (<<<), (==), (>>=))
 import Config (CHROME)
 import Control.Monad.Aff (runAff)
 import Control.Monad.Eff (Eff)
@@ -18,7 +18,7 @@ import DOM.QueryDocument (pasteLink, queryEmail)
 import Data.Either (Either(..))
 import Data.Function.Eff (EffFn1, mkEffFn1, runEffFn1)
 import Data.Maybe (Maybe(..))
-import GenerateClient.Types 
+import GenerateClient.Types (LastMailingData(..), MailingData(..)) 
 import Network.HTTP.Affjax (AJAX)
 import Network.HTTP.StatusCode (StatusCode(..))
 import Servant.PureScript.Affjax (AjaxError(..), ErrorDescription(..), errorToString)
