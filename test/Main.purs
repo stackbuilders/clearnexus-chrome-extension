@@ -22,8 +22,7 @@ import Test.GenClient ( testGetEmailPropsWithSubscribedEmail
                       , testGetEmailPropsWithUnsubscribedEmail
                       , testGetEmailPropsWithResubscribedEmail
                       , testGetEmailPropsWithInvalidToken
-                      , testGetEmailPropsWithNonExistentEmail
-                      , testPostNewLinkWithUnsuscribedEmail
+                      , testGetEmailPropsWithNonExistentEmail                      
                       , testGetLinkWithInvalidUserToken
                       , testGetLinkWithInvalidLinkToken
                       , testGetLinkWithValidTokens           )
