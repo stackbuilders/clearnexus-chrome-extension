@@ -7,28 +7,39 @@ module GenerateClient.API (API) where
 import Data.Text (Text)
 import GenerateClient.Types
 import Servant
-import GenerateClient.Types (CreateLinkData)
 
+type API = GetMailingR
+       :<|> GetLastMailingR
+       :<|> PostLinksR
+       :<|> PostMailingsR
 
-type GetLinkR =
-  QueryParam "access_token" Text :>
+type Token = Text
+
+type GetMailingR =
+  QueryParam "access_token" Token :>
   "api" :>
-  "link" :>
-  Capture "token" Text :>
-  Get '[JSON] LinkData
+  "mailing" :>
+  Capture "token" Token :>
+  Get '[JSON] MailingData
 
-type GetEmailPropertiesR =
-  QueryParam "access_token" Text :>
+type GetLastMailingR =
+  QueryParam "access_token" Token :>
   "api" :>
-  "email" :>
-  Capture "email" Text :>
-  Get '[JSON] EmailProperties
+  "mailing" :>
+  "last" :>
+  Capture "email" Text :> 
+  Get '[JSON] LastMailingData
 
 type PostLinksR =
-  QueryParam "access_token" Text :>
+  QueryParam "access_token" Token :>
   "api" :>
   "links" :>
   ReqBody '[JSON] CreateLinkData :>
-  Post '[JSON] LinkData
+  PostCreated '[JSON] MailingData
 
-type API = GetEmailPropertiesR :<|> PostLinksR :<|> GetLinkR
+type PostMailingsR =
+  QueryParam "access_token" Token :>
+  "api" :>
+  "mailings" :>
+  ReqBody '[JSON] CreateMailingData :>
+  PostCreated '[JSON] MailingData
