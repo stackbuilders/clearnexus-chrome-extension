@@ -15,7 +15,7 @@ import Control.Monad.State.Trans (StateT)
 import Data.Either (Either(..))
 import Data.Identity (Identity)
 import Data.Semigroup ((<>))
-import GenerateClient.Types (EmailProperties(..), LinkData(..))
+import GenerateClient.Types 
 import Network.HTTP.Affjax (AJAX)
 import Prelude (bind, ($), Unit, show)
 import Config (CHROME)
@@ -25,8 +25,7 @@ import Servant.PureScript.Affjax ( AjaxError(..)
 import Test.Spec (Group, it)
 import Test.Spec.Assertions (fail, shouldEqual)
 import Test.Spec.Assertions.String (shouldContain)
-import Util (getSubscriptionStatus, postNewLink, getLink)
-
+import Util (getLastMailing, postNewMailing, postNewLink)
 
 type GenClientTest eff =
   forall eff .
@@ -71,29 +70,23 @@ getStatus (EmailProperties obj) = obj.subscribed
 testGetEmailPropsWithNonExistentEmail :: forall eff . String -> GenClientTest eff
 testGetEmailPropsWithNonExistentEmail userToken =
   it "returns Status Code 404 when called with an email which is not in the Server's DB" do
-    response <- getSubscriptionStatus clearNexusStaging
-                                      notSubscribedEmail
-                                      userToken
+    response <- getLastMailing clearNexusStaging notSubscribedEmail userToken
     getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 404)"
 
 
 testGetEmailPropsWithSubscribedEmail :: forall eff . String -> GenClientTest eff
 testGetEmailPropsWithSubscribedEmail testUserToken =
-  it "returns true for an email that is subscribed" do
-    isSubscribed <- getSubscriptionStatus clearNexusStaging
-                                          subscribedEmail
-                                          testUserToken
-    case isSubscribed of
+  it "returns MailingData related to a subscribed link" do
+    mailing <- getLastMailing clearNexusStaging subscribedEmail testUserToken
+    case mailing of
       Left err -> fail $ errorToString err
-      Right status -> getStatus status `shouldEqual` true
+      Right (MailingData ml) -> ml.is_link_subscribed `shouldEqual` true
 
 
 testGetEmailPropsWithUnsubscribedEmail :: forall eff . String -> GenClientTest eff
 testGetEmailPropsWithUnsubscribedEmail testUserToken =
   it "returns false for an email that has unsubscribed" do
-    isSubscribed <- getSubscriptionStatus clearNexusStaging
-                                          unsubscribedEmail
-                                          testUserToken
+    isSubscribed <- getLastMailing clearNexusStaging unsubscribedEmail testUserToken
     case isSubscribed of
       Left err -> fail $ errorToString err
       Right status -> getStatus status `shouldEqual` false
@@ -102,9 +95,7 @@ testGetEmailPropsWithUnsubscribedEmail testUserToken =
 testGetEmailPropsWithResubscribedEmail :: forall eff . String -> GenClientTest eff
 testGetEmailPropsWithResubscribedEmail testUserToken =
   it "returns true for an email that has resubscribed" do
-    isSubscribed <- getSubscriptionStatus clearNexusStaging
-                                          resubscribedEmail
-                                          testUserToken
+    isSubscribed <- getLastMailing clearNexusStaging resubscribedEmail testUserToken
     case isSubscribed of
       Left err -> fail $ errorToString err
       Right status -> getStatus status `shouldEqual`  true
@@ -113,7 +104,7 @@ testGetEmailPropsWithResubscribedEmail testUserToken =
 testGetEmailPropsWithInvalidToken :: forall eff . GenClientTest eff
 testGetEmailPropsWithInvalidToken =
   it "returns Status Code 401 when called with Invalid Token" do
-    response <- getSubscriptionStatus clearNexusStaging resubscribedEmail invalidToken
+    response <- getLastMailing clearNexusStaging resubscribedEmail invalidToken
     getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 401)"
 
 
