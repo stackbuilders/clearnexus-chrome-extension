@@ -1,6 +1,7 @@
 module Util ( getLastMailing
             , postNewMailing
             , postNewLink
+            , AjaxRequest
             ) where
 
 
