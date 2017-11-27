@@ -1,11 +1,8 @@
-module Test.GenClient (  testGetEmailPropsWithSubscribedEmail
-                       , testGetEmailPropsWithUnsubscribedEmail
-                       , testGetEmailPropsWithResubscribedEmail
-                       , testGetEmailPropsWithInvalidToken
-                       , testGetEmailPropsWithNonExistentEmail
-                       , testGetLinkWithInvalidUserToken
-                       , testGetLinkWithInvalidLinkToken
-                       , testGetLinkWithValidTokens          ) where
+module Test.GenClient (  testGetLastMailingWithSubscribedEmail
+                       , testGetLastMailingWithUnsubscribedEmail
+                       , testGetLastMailingWithResubscribedEmail
+                       , testGetLastMailingWithInvalidToken
+                       , testGetLastMailingWithNonExistentEmail ) where
 
 
 import Control.Monad.Aff (Aff)
@@ -68,15 +65,15 @@ getSubsStatus (Just (MailingData ml)) = ml.is_link_subscribed
 -- >>
 
 
-testGetEmailPropsWithNonExistentEmail :: forall eff . String -> GenClientTest eff
-testGetEmailPropsWithNonExistentEmail userToken =
+testGetLastMailingWithNonExistentEmail :: forall eff . String -> GenClientTest eff
+testGetLastMailingWithNonExistentEmail userToken =
   it "returns Status Code 404 when called with an email which is not in the Server's DB" do
     response <- getLastMailing clearNexusStaging notSubscribedEmail userToken
     getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 404)"
 
 
-testGetEmailPropsWithSubscribedEmail :: forall eff . String -> GenClientTest eff
-testGetEmailPropsWithSubscribedEmail testUserToken =
+testGetLastMailingWithSubscribedEmail :: forall eff . String -> GenClientTest eff
+testGetLastMailingWithSubscribedEmail testUserToken =
   it "returns MailingData related to a subscribed link" do
     mailing <- getLastMailing clearNexusStaging subscribedEmail testUserToken
     case mailing of
@@ -85,8 +82,8 @@ testGetEmailPropsWithSubscribedEmail testUserToken =
       _ -> fail $ "Unknow error"    
 
 
-testGetEmailPropsWithUnsubscribedEmail :: forall eff . String -> GenClientTest eff
-testGetEmailPropsWithUnsubscribedEmail testUserToken =
+testGetLastMailingWithUnsubscribedEmail :: forall eff . String -> GenClientTest eff
+testGetLastMailingWithUnsubscribedEmail testUserToken =
   it "returns MailingData related to a subscribed link" do
     mailing <- getLastMailing clearNexusStaging unsubscribedEmail testUserToken
     case mailing of
@@ -95,8 +92,8 @@ testGetEmailPropsWithUnsubscribedEmail testUserToken =
       _ -> fail $ "Unknow error"
       
 
-testGetEmailPropsWithResubscribedEmail :: forall eff . String -> GenClientTest eff
-testGetEmailPropsWithResubscribedEmail testUserToken =
+testGetLastMailingWithResubscribedEmail :: forall eff . String -> GenClientTest eff
+testGetLastMailingWithResubscribedEmail testUserToken =
   it "returns MailingData related to a subscribed link" do
     mailing <- getLastMailing clearNexusStaging resubscribedEmail testUserToken
     case mailing of
@@ -105,40 +102,11 @@ testGetEmailPropsWithResubscribedEmail testUserToken =
       _ -> fail $ "Unknow error"
 
 
-testGetEmailPropsWithInvalidToken :: forall eff . GenClientTest eff
-testGetEmailPropsWithInvalidToken =
+testGetLastMailingWithInvalidToken :: forall eff . GenClientTest eff
+testGetLastMailingWithInvalidToken =
   it "returns Status Code 401 when called with Invalid Token" do
     response <- getLastMailing clearNexusStaging resubscribedEmail invalidToken
     getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 401)"
-
-
-testGetLinkWithInvalidUserToken :: forall eff . String -> GenClientTest eff
-testGetLinkWithInvalidUserToken linkToken =
-  it "returns Status Code 401 when called with Invalid User Token" do
-    response <- getLastMailing clearNexusStaging linkToken invalidToken
-    getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 401)"
-
-
-testGetLinkWithInvalidLinkToken :: forall eff . String -> GenClientTest eff
-testGetLinkWithInvalidLinkToken userToken =
-  it "returns Status Code 500 when called with Invalid Link Token" do
-    response <- getLastMailing clearNexusStaging invalidToken userToken
-    getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 500)"
-
-
-testGetLinkWithValidTokens :: forall eff . String -> String -> GenClientTest eff
-testGetLinkWithValidTokens linkToken userToken =
-  it "returns a MailingData object with the correct link properties" do
-    response <- getLastMailing clearNexusStaging linkToken userToken
-    case response  of
-      Right (LastMailingData { mailing_data: Just (MailingData ml) }) -> do
-        ml.email `shouldContain` "@clearnex.us"
-        ml.organization `shouldEqual` "Chrome Extension Test"
-        ml.token `shouldEqual` linkToken
-        ml.unsubscription_link `shouldContain` ("links/" <> linkToken <> "/unsubscribe")
-        ml.subscription_link `shouldContain` ("links/" <> linkToken <> "/subscribe")
-      err -> logShow $ getStatusCodeFromErrDesc err
-
 
 -- << TODO: We need a way to add rollbacks on the server side for testing
 --    in order for this test to be replicable because it always creates a new
