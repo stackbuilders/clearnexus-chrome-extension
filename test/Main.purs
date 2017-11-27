@@ -37,14 +37,11 @@ main :: forall eff . Eff (  process :: PROCESS
 main =  do
   maybeUserToken <- lookupEnv "CLEARNEXUS_USER_TEST_TOKEN"
   maybeLinkToken <- lookupEnv "CLEARNEXUS_LINK_TEST_TOKEN"
-  case Tuple maybeUserToken maybeLinkToken of
-    Tuple Nothing _-> do
+  case maybeUserToken of
+    Nothing -> do
       log "Please set the CLEARNEXUS_USER_TEST_TOKEN environment variable..."
       exit 1
-    Tuple _ Nothing -> do
-      log "Please set the CLEARNEXUS_LINK_TEST_TOKEN environment variable..."
-      exit 1
-    Tuple (Just userToken) (Just linkToken) -> run [ consoleReporter ] do
+    (Just userToken) -> run [ consoleReporter ] do
       describe "Get Last Mailing Data endpoint" do
         describe "getLastMailing" do
           testGetLastMailingWithSubscribedEmail userToken

@@ -35,9 +35,6 @@ clearNexusStaging = "https://staging.clearnex.us/"
 notSubscribedEmail :: String
 notSubscribedEmail = "notsubscribed@clearnex.us"
 
-unsubscribedEmail :: String
-unsubscribedEmail = "unsubscribed@clearnex.us"
-
 subscribedEmail :: String
 subscribedEmail = "subscribed@clearnex.us"
 
@@ -68,7 +65,7 @@ getSubsStatus (Just (MailingData ml)) = ml.is_link_subscribed
 testGetLastMailingWithNonExistentEmail :: forall eff . String -> GenClientTest eff
 testGetLastMailingWithNonExistentEmail userToken =
   it "returns Status Code 404 when called with an email which is not in the Server's DB" do
-    response <- getLastMailing clearNexusStaging notSubscribedEmail userToken
+    response <- getLastMailing clearNexusStaging "nonexistentemail@clearnex.us" userToken
     getStatusCodeFromErrDesc response `shouldEqual` "(StatusCode 404)"
 
 
@@ -84,8 +81,8 @@ testGetLastMailingWithSubscribedEmail testUserToken =
 
 testGetLastMailingWithUnsubscribedEmail :: forall eff . String -> GenClientTest eff
 testGetLastMailingWithUnsubscribedEmail testUserToken =
-  it "returns MailingData related to a subscribed link" do
-    mailing <- getLastMailing clearNexusStaging unsubscribedEmail testUserToken
+  it "returns MailingData related to a unsubscribed link" do
+    mailing <- getLastMailing clearNexusStaging notSubscribedEmail testUserToken
     case mailing of
       Left err -> fail $ errorToString err      
       Right (LastMailingData { mailing_data: ml }) -> getSubsStatus ml `shouldEqual` false
