@@ -18,15 +18,11 @@ import Test.Spec (describe)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (run)
 import Test.Storage (testQueryForToken)
-import Test.GenClient ( testGetEmailPropsWithSubscribedEmail
-                      , testGetEmailPropsWithUnsubscribedEmail
-                      , testGetEmailPropsWithResubscribedEmail
-                      , testGetEmailPropsWithInvalidToken
-                      , testGetEmailPropsWithNonExistentEmail
-                      , testPostNewLinkWithUnsuscribedEmail
-                      , testGetLinkWithInvalidUserToken
-                      , testGetLinkWithInvalidLinkToken
-                      , testGetLinkWithValidTokens           )
+import Test.GenClient ( testGetLastMailingWithSubscribedEmail
+                      , testGetLastMailingWithUnsubscribedEmail
+                      , testGetLastMailingWithResubscribedEmail
+                      , testGetLastMailingWithInvalidToken
+                      , testGetLastMailingWithNonExistentEmail )
 
 
 main :: forall eff . Eff (  process :: PROCESS
@@ -41,30 +37,18 @@ main :: forall eff . Eff (  process :: PROCESS
 main =  do
   maybeUserToken <- lookupEnv "CLEARNEXUS_USER_TEST_TOKEN"
   maybeLinkToken <- lookupEnv "CLEARNEXUS_LINK_TEST_TOKEN"
-  case Tuple maybeUserToken maybeLinkToken of
-    Tuple Nothing _-> do
+  case maybeUserToken of
+    Nothing -> do
       log "Please set the CLEARNEXUS_USER_TEST_TOKEN environment variable..."
       exit 1
-    Tuple _ Nothing -> do
-      log "Please set the CLEARNEXUS_LINK_TEST_TOKEN environment variable..."
-      exit 1
-    Tuple (Just userToken) (Just linkToken) -> run [ consoleReporter ] do
-      describe "Get email properties endpoint" do
-        describe "getSubscriptionStatus" do
-          testGetEmailPropsWithSubscribedEmail userToken
-          testGetEmailPropsWithUnsubscribedEmail userToken
-          testGetEmailPropsWithResubscribedEmail userToken
-          testGetEmailPropsWithNonExistentEmail userToken
-          testGetEmailPropsWithInvalidToken
-      describe "Get link data endpoint" do
-        describe "getLink" do
-          testGetLinkWithInvalidUserToken linkToken
-          testGetLinkWithInvalidLinkToken userToken
-          testGetLinkWithValidTokens linkToken userToken
-   -- Enable this test when implementing RollBack in the Server
-   -- describe "Post new link endpoint" do
-   --   describe "postNewLink" do
-   --     testPostNewLinkWithUnsuscribedEmail userToken
+    (Just userToken) -> run [ consoleReporter ] do
+      describe "Get Last Mailing Data endpoint" do
+        describe "getLastMailing" do
+          testGetLastMailingWithSubscribedEmail userToken
+          testGetLastMailingWithUnsubscribedEmail userToken
+          testGetLastMailingWithResubscribedEmail userToken
+          testGetLastMailingWithNonExistentEmail userToken
+          testGetLastMailingWithInvalidToken
       describe "DOM Module" do
         describe "Querying Gmail's document elements" do
           testQueryForToken

@@ -8,19 +8,35 @@ import Prim (Array, Boolean, String)
 import Prelude
 import Data.Generic (class Generic)
 
-newtype EmailProperties =
-    EmailProperties {
-      subscribed :: Boolean
-    , link_token :: String
+newtype CreateMailingData =
+    CreateMailingData {
+      link_email :: String
+    , description :: String
     }
 
-derive instance genericEmailProperties :: Generic EmailProperties
+derive instance genericCreateMailingData :: Generic CreateMailingData
 
 --------------------------------------------------------------------------------
-_EmailProperties :: Prism' EmailProperties { subscribed :: Boolean, link_token :: String}
-_EmailProperties = prism' EmailProperties f
+_CreateMailingData :: Prism' CreateMailingData { link_email :: String, description :: String}
+_CreateMailingData = prism' CreateMailingData f
   where
-    f (EmailProperties r) = Just r
+    f (CreateMailingData r) = Just r
+
+
+--------------------------------------------------------------------------------
+newtype CreateLinkData =
+    CreateLinkData {
+      target_email :: String
+    , description :: String
+    }
+
+derive instance genericCreateLinkData :: Generic CreateLinkData
+
+--------------------------------------------------------------------------------
+_CreateLinkData :: Prism' CreateLinkData { target_email :: String, description :: String}
+_CreateLinkData = prism' CreateLinkData f
+  where
+    f (CreateLinkData r) = Just r
 
 
 --------------------------------------------------------------------------------
@@ -42,39 +58,40 @@ _ClickEventData = prism' ClickEventData f
 
 
 --------------------------------------------------------------------------------
-newtype CreateLinkData =
-    CreateLinkData {
-      target_email :: String
+newtype LastMailingData =
+    LastMailingData {
+      mailing_data :: Maybe MailingData
     }
 
-derive instance genericCreateLinkData :: Generic CreateLinkData
+derive instance genericLastMailingData :: Generic LastMailingData
 
 --------------------------------------------------------------------------------
-_CreateLinkData :: Prism' CreateLinkData { target_email :: String}
-_CreateLinkData = prism' CreateLinkData f
+_LastMailingData :: Prism' LastMailingData { mailing_data :: Maybe MailingData}
+_LastMailingData = prism' LastMailingData f
   where
-    f (CreateLinkData r) = Just r
+    f (LastMailingData r) = Just r
 
 
 --------------------------------------------------------------------------------
-newtype LinkData =
-    LinkData {
+newtype MailingData =
+    MailingData {
       email :: String
     , organization :: String
     , token :: String
+    , is_link_subscribed :: Boolean
     , unsubscription_link :: String
     , subscription_link :: String
     , created_at :: String
     , click_events :: Array ClickEventData
     }
 
-derive instance genericLinkData :: Generic LinkData
+derive instance genericMailingData :: Generic MailingData
 
 --------------------------------------------------------------------------------
-_LinkData :: Prism' LinkData { email :: String, organization :: String, token :: String, unsubscription_link :: String, subscription_link :: String, created_at :: String, click_events :: Array ClickEventData}
-_LinkData = prism' LinkData f
+_MailingData :: Prism' MailingData { email :: String, organization :: String, token :: String, is_link_subscribed :: Boolean, unsubscription_link :: String, subscription_link :: String, created_at :: String, click_events :: Array ClickEventData}
+_MailingData = prism' MailingData f
   where
-    f (LinkData r) = Just r
+    f (MailingData r) = Just r
 
 
 --------------------------------------------------------------------------------

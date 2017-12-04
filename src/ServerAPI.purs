@@ -10,7 +10,7 @@ import Data.Argonaut.Generic.Aeson (decodeJson, encodeJson)
 import Data.Argonaut.Printer (printJson)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable(), toNullable)
-import GenerateClient.Types (CreateLinkData, EmailProperties, LinkData)
+import GenerateClient.Types (CreateLinkData, CreateMailingData, LastMailingData, MailingData)
 import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AJAX)
 import Prim (String)
@@ -21,16 +21,38 @@ import Servant.PureScript.Util (encodeHeader, encodeListQuery, encodeQueryItem, 
 newtype SPParams_ = SPParams_ { baseURL :: String
                               }
 
-getApiEmailByEmail :: forall eff m.
-                      (MonadReader (SPSettings_ SPParams_) m, MonadError AjaxError m, MonadAff ( ajax :: AJAX | eff) m)
-                      => String -> String -> m EmailProperties
-getApiEmailByEmail email access_token = do
+getApiMailingByToken :: forall eff m.
+                        (MonadReader (SPSettings_ SPParams_) m, MonadError AjaxError m, MonadAff ( ajax :: AJAX | eff) m)
+                        => String -> String -> m MailingData
+getApiMailingByToken token access_token = do
   spOpts_' <- ask
   let spOpts_ = case spOpts_' of SPSettings_ o -> o
   let spParams_ = case spOpts_.params of SPParams_ ps_ -> ps_
   let baseURL = spParams_.baseURL
   let httpMethod = "GET"
-  let reqUrl = baseURL <> "api" <> "/" <> "email"
+  let reqUrl = baseURL <> "api" <> "/" <> "mailing"
+        <> "/" <> encodeURLPiece spOpts_' token 
+        <> "?" <> encodeQueryItem spOpts_' "access_token" access_token
+  let reqHeaders =
+        []
+  let affReq = defaultRequest
+                 { method = httpMethod
+                 , url = reqUrl
+                 , headers = defaultRequest.headers <> reqHeaders
+                 }
+  affResp <- affjax affReq
+  getResult affReq decodeJson affResp
+  
+getApiMailingLastByEmail :: forall eff m.
+                            (MonadReader (SPSettings_ SPParams_) m, MonadError AjaxError m, MonadAff ( ajax :: AJAX | eff) m)
+                            => String -> String -> m LastMailingData
+getApiMailingLastByEmail email access_token = do
+  spOpts_' <- ask
+  let spOpts_ = case spOpts_' of SPSettings_ o -> o
+  let spParams_ = case spOpts_.params of SPParams_ ps_ -> ps_
+  let baseURL = spParams_.baseURL
+  let httpMethod = "GET"
+  let reqUrl = baseURL <> "api" <> "/" <> "mailing" <> "/" <> "last"
         <> "/" <> encodeURLPiece spOpts_' email 
         <> "?" <> encodeQueryItem spOpts_' "access_token" access_token
   let reqHeaders =
@@ -45,7 +67,7 @@ getApiEmailByEmail email access_token = do
   
 postApiLinks :: forall eff m.
                 (MonadReader (SPSettings_ SPParams_) m, MonadError AjaxError m, MonadAff ( ajax :: AJAX | eff) m)
-                => CreateLinkData -> String -> m LinkData
+                => CreateLinkData -> String -> m MailingData
 postApiLinks reqBody access_token = do
   spOpts_' <- ask
   let spOpts_ = case spOpts_' of SPSettings_ o -> o
@@ -65,17 +87,16 @@ postApiLinks reqBody access_token = do
   affResp <- affjax affReq
   getResult affReq decodeJson affResp
   
-getApiLinkByToken :: forall eff m.
-                     (MonadReader (SPSettings_ SPParams_) m, MonadError AjaxError m, MonadAff ( ajax :: AJAX | eff) m)
-                     => String -> String -> m LinkData
-getApiLinkByToken token access_token = do
+postApiMailings :: forall eff m.
+                   (MonadReader (SPSettings_ SPParams_) m, MonadError AjaxError m, MonadAff ( ajax :: AJAX | eff) m)
+                   => CreateMailingData -> String -> m MailingData
+postApiMailings reqBody access_token = do
   spOpts_' <- ask
   let spOpts_ = case spOpts_' of SPSettings_ o -> o
   let spParams_ = case spOpts_.params of SPParams_ ps_ -> ps_
   let baseURL = spParams_.baseURL
-  let httpMethod = "GET"
-  let reqUrl = baseURL <> "api" <> "/" <> "link"
-        <> "/" <> encodeURLPiece spOpts_' token 
+  let httpMethod = "POST"
+  let reqUrl = baseURL <> "api" <> "/" <> "mailings" 
         <> "?" <> encodeQueryItem spOpts_' "access_token" access_token
   let reqHeaders =
         []
@@ -83,6 +104,7 @@ getApiLinkByToken token access_token = do
                  { method = httpMethod
                  , url = reqUrl
                  , headers = defaultRequest.headers <> reqHeaders
+                 , content = toNullable <<< Just <<< printJson <<< encodeJson $ reqBody
                  }
   affResp <- affjax affReq
   getResult affReq decodeJson affResp

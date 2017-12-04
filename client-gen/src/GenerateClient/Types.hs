@@ -1,26 +1,20 @@
 {-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 
-module GenerateClient.Types ( EmailProperties
-                            , LinkData
-                            , ClickEventData
-                            , CreateLinkData  ) where
+module GenerateClient.Types ( CreateMailingData(..)
+                            , MailingData(..)
+                            , ClickEventData(..)
+                            , CreateLinkData(..)
+                            , LastMailingData  ) where
 
 
 import Data.Text (Text)
 import GHC.Generics
 
-
-newtype CreateLinkData = CreateLinkData
-  { target_email :: Text
-  }
-  deriving (Generic)
-
-data EmailProperties = EmailProperties
-  { subscribed :: !Bool
-  , link_token:: !Text
-  }
-    deriving (Generic)
+data CreateLinkData = CreateLinkData
+  { target_email :: !Text
+  , description :: !Text
+  } deriving (Generic)
 
 data ClickEventData = ClickEventData
   { subscribed :: !Bool
@@ -29,12 +23,22 @@ data ClickEventData = ClickEventData
   , user_agent  :: !(Maybe Text)
   } deriving (Generic)
 
-data LinkData = LinkData
-  { email        :: !Text
+data CreateMailingData = CreateMailingData {
+    link_email :: !Text
+  , description :: !Text
+  } deriving Generic
+
+data MailingData = MailingData
+  { email :: !Text
   , organization :: !Text
-  , token        :: !Text
+  , token :: !Text
+  , is_link_subscribed :: !Bool
   , unsubscription_link :: !Text
   , subscription_link  :: !Text
   , created_at    :: !Text
   , click_events  :: ![ClickEventData]
-  } deriving (Generic)
+  } deriving Generic
+
+newtype LastMailingData = LastMailingData {
+  mailing_data :: Maybe MailingData
+  } deriving Generic
