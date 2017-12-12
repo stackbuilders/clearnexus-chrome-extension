@@ -13,12 +13,23 @@ exports.uncurriedSaveToken = function(document_, chrome_) {
       chrome.storage.sync.set({
 	authtoken: token
       }, function() {
-	alert('Your token has been saved');
-	document.getElementById('save_tkn_cn').disabled = true;
-	input.disabled = true;
+	var options = { type: "basic",
+		       iconUrl: "logo.png",
+		       title: "Clear Nexus",
+			message: "Your token has been set" };
+
+	chrome.notifications.create("token-notif-id", options, function() {
+	  document.getElementById('save_tkn_cn').disabled = true;
+	  input.disabled = true;
+
+	  // Delay 2 secs the closing of the pop up for better user experience.
+	  setTimeout(function() {
+	    window.close();
+	    chrome.notifications.clear("token-notif-id");
+	  }, 1500);
+	});
       });
     }
-
     return token;
   };
 };
