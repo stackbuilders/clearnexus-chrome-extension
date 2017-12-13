@@ -20,8 +20,9 @@
   ],
 
   "permissions": ["activeTab",
-                  "tabs",
+		  "tabs",
 		  "storage",
+		  "notifications",
 		  "*://staging.clearnex.us/*",
-                  "*://clearnex.us/*"]
+		  "*://clearnex.us/*"]
 }
