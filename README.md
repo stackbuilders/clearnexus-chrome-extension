@@ -50,12 +50,13 @@ to give permissions to the ngrok-url in the following way:
 {
  ...,
 
- "permissions": ["activeTab",
-				  "tabs",
-		  "storage",
-		  "*://staging.clearnex.us/*",
-		  "*://ca639050.ngrok.io/*" --> EXAMPLE NGROK URL
-		  ]
+ "permissions": [
+	"activeTab",
+	"tabs",
+	"storage",
+	"*://staging.clearnex.us/*",
+	"*://ca639050.ngrok.io/*" --> EXAMPLE NGROK URL
+	]
 }
 ```
 Make sure that the clearnexus server `url` you provide is forwarded against `https`. Otherwise, you may have
