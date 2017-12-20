@@ -14,5 +14,4 @@ before_script:
   - bower install
 
 script:
-  - travis_wait 30 npm run pulp build
-  - npm run pulp test
+  - travis_wait 40 npm run pulp test
