@@ -1,0 +1,15 @@
+language: node_js
+
+cache:
+  directories:
+    - "node_modules"
+    - "bower_components"
+
+node_js:
+  - "6.10.0"
+
+before_script:
+  - npm install -g bower
+  - bower install
+
+script: npm run pulp build
