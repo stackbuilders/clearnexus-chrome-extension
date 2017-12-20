@@ -12,4 +12,6 @@ before_script:
   - npm install -g bower
   - bower install
 
-script: npm run pulp build
+script:
+  - npm run pulp build
+  - npm run pulp test
