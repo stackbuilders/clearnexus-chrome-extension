@@ -10,6 +10,7 @@ node_js:
 
 before_script:
   - npm install -g bower
+  - npm install -g pulp@10.0.0
   - bower install
 
 script:
