@@ -9,11 +9,10 @@ node_js:
   - "6.10.0"
 
 before_script:
-  - rm -rf project/output
   - npm install -g bower
   - npm install -g pulp@10.0.0
   - bower install
 
 script:
-  - npm run pulp build
+  - travis_wait 30 npm run pulp build
   - npm run pulp test
