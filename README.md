@@ -1,6 +1,6 @@
 # Clearnexus - Chrome Extension
 
-[![CircleCI](https://circleci.com/gh/stackbuilders/clearnexus-chrome-extension/tree/master.svg?style=svg&circle-token=29dd40a261218c0ea674ccf8ebe37b20fae4f525)](https://circleci.com/gh/stackbuilders/clearnexus-chrome-extension/tree/master)
+[![Build Status](https://travis-ci.org/stackbuilders/clearnexus-chrome-extension.svg?branch=master)](https://travis-ci.org/stackbuilders/clearnexus-chrome-extension)
 
 ## Set Up
 
@@ -50,12 +50,13 @@ to give permissions to the ngrok-url in the following way:
 {
  ...,
 
- "permissions": ["activeTab",
-                  "tabs",
-		  "storage",
-		  "*://staging.clearnex.us/*",
-		  "*://ca639050.ngrok.io/*" --> EXAMPLE NGROK URL
-		  ]
+ "permissions": [
+	"activeTab",
+	"tabs",
+	"storage",
+	"*://staging.clearnex.us/*",
+	"*://ca639050.ngrok.io/*" --> EXAMPLE NGROK URL
+	]
 }
 ```
 Make sure that the clearnexus server `url` you provide is forwarded against `https`. Otherwise, you may have
@@ -89,11 +90,10 @@ Open your Google Chrome web browser and go to extensions. Drag and drop `dist/cl
 
 ## Running tests
 
-Set this environment variables (you can find sample values in `access_tokens` and `links` tables):
+Set this environment variable (you can find sample values in `access_tokens` table):
 
 ```
 CLEARNEXUS_USER_TEST_TOKEN
-CLEARNEXUS_LINK_TEST_TOKEN
 ```
 Run `pulp test`
 

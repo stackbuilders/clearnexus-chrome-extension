@@ -7,3 +7,4 @@
 /.psa*
 /extension/clearnexus.js
 /dist/
+npm-debug.log

@@ -1,0 +1,17 @@
+language: node_js
+
+cache:
+  directories:
+    - "node_modules"
+    - "bower_components"
+
+node_js:
+  - "6.10.0"
+
+before_script:
+  - npm install -g bower
+  - npm install -g pulp@10.0.0
+  - bower install
+
+script:
+  - travis_wait 40 npm run pulp test
