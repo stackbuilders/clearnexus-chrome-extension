@@ -9,6 +9,7 @@ node_js:
   - "6.10.0"
 
 before_script:
+  - rm -rf project/output
   - npm install -g bower
   - npm install -g pulp@10.0.0
   - bower install
