@@ -1,6 +1,7 @@
-# Clearnexus - Chrome Extension
-
 [![Build Status](https://travis-ci.org/stackbuilders/clearnexus-chrome-extension.svg?branch=master)](https://travis-ci.org/stackbuilders/clearnexus-chrome-extension)
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
+# DEPRECATED - Clearnexus - Chrome Extension
 
 ## Set Up
 
@@ -98,3 +99,12 @@ CLEARNEXUS_USER_TEST_TOKEN
 Run `pulp test`
 
 [repository]: https://github.com/stackbuilders/clearnexus-chrome-extension
+
+---
+## License
+
+MIT, see [the LICENSE file](LICENSE).
+
+---
+<img src="https://cdn.stackbuilders.com/media/images/Sb-supports.original.png" alt="Stack Builders" width="50%"></img>  
+[Check out our libraries](https://github.com/stackbuilders/) | [Join our team](https://www.stackbuilders.com/join-us/)
